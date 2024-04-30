@@ -1,0 +1,31 @@
+{
+    "type": "module",
+    "name": "My First Express Server",
+    "version": "0.0.1",
+    "description": "Mijn eerste Express server",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "nodejs",
+        "express",
+        "avans",
+        "programmeren-4"
+    ],
+    "author": "Robin",
+    "license": "ISC",
+    "prettier": {
+        "singleQuote": true,
+        "trailingComma": "none",
+        "semi": false,
+        "tabWidth": 4
+    },
+    "dependencies": {
+        "express": "^4.19.2"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.0"
+    }
+}

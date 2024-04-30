@@ -1,0 +1,25 @@
+
+# Ignore build output directories
+/bin/
+/build/
+/out/
+
+# Ignore package manager directories
+/node_modules/
+/packages/
+
+# Ignore log files
+*.log
+
+# Ignore user-specific files
+/.env
+/.env.local
+/.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore sensitive or private information
+secrets.txt
+credentials.json
+*.PublishSettings
