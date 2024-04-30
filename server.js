@@ -1,39 +1,17 @@
 import express from 'express';
-import database from './src/dtb/inmem-db.js';
+import logger from './src/logger.js';
+import userRoutes from './src/routes/user.routes.js';
+
 const app = express();
-
 const port = 8080;
-
-app.all('*', (req, res, next) => {
-    console.log('Request:', req.method, req.url);
-    next();
-});
+app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.json({ message: 'Hello World' });
-});
+    res.send('<h1> Hi welcome to my site </h1>');
+})
 
-app.get('/api/info', (req, res) => {
-    console.log('GET /api/info');
-    const info = {
-        name: 'My Nodejs Express server',
-        version: '0.0.1',
-        description: 'This is a simple Nodejs Express server'
-    }
-    res.json(info);
-});
-
-app.get('/api/users', (req, res) => {
-    console.log('GET /api/users')
-    database.getAll((err, data) => {
-        if (err) {
-            res.status(500).json(err)
-        } else {
-            res.status(200).json(data)
-        }
-    });
-});
+app.use(userRoutes);
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    logger.info(`Server is running on port ${port}`);
 });

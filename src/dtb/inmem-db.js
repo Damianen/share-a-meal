@@ -28,7 +28,7 @@ const database = {
             } else {
                 callback(null, this._data[id]);
             }
-        }, 1500)
+        }, 1500);
     },
 
     add(item, callback) {
@@ -36,7 +36,35 @@ const database = {
             item.id = this._index++;
             this._data.push(item);
             callback(null, item);
-        }, 1500)
+        }, 1500);
+    },
+
+    update(oldItemId, item, callback) {
+        setTimeout(() => {
+            if (oldItemId < 0 || oldItemId >= this._data.length) {
+                callback({ message: `Error: id ${oldItemId} does not exist!` }, null);
+            } else {
+                this._data[oldItemId] = item;
+                callback(null, item);
+            }
+        }, 1500);
+    },
+
+    delete(itemId, callback) {
+        setTimeout(() => {
+            if (itemId < 0 || itemId >= this._data.length) {
+                callback({ message: `Error: id ${itemId} does not exist!` }, null);
+            } else {
+                this._data.slice(itemId, 1);
+                this._data.forEach((entry) => {
+                    if (entry.id > item.id) {
+                        entry.id--;
+                    }
+                });
+                this._index--;
+                callback(null, null);
+            }
+        }, 1500);
     }
 }
 
