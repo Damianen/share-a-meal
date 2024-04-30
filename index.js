@@ -2,7 +2,7 @@ import express from 'express';
 import database from './src/dtb/inmem-db.js';
 const app = express();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 app.all('*', (req, res, next) => {
     console.log('Request:', req.method, req.url);
