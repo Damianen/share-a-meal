@@ -1,27 +1,15 @@
 {
     "type": "module",
-    "name": "My First Express Server",
+    "name": "share-a-meal",
     "version": "0.0.1",
-    "description": "Mijn eerste Express server",
-    "main": "index.js",
+    "description": "share a meal project",
+    "main": "server.js",
     "scripts": {
-        "start": "npx nodemon index.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "keywords": [
-        "nodejs",
-        "express",
-        "avans",
-        "programmeren-4"
-    ],
-    "author": "Robin",
+    "keywords": [],
+    "author": "",
     "license": "ISC",
-    "prettier": {
-        "singleQuote": true,
-        "trailingComma": "none",
-        "semi": false,
-        "tabWidth": 4
-    },
     "dependencies": {
         "express": "^4.19.2"
     },
