@@ -23,6 +23,49 @@ let userController = {
         })
     },
 
+    update: (req, res, next) => {
+        const updatedUser = req.body;
+        const userId = parseInt(req.params.userId);
+        logger.info(`Update user with id: ${userId}`);
+        userService.update(userId, updatedUser, (error, success) => {
+            if (error) {
+                return next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                res.status(200).json({
+                    status: success.status,
+                    message: success.message,
+                    data: success.data
+                })
+            }
+        })
+    },
+
+    delete: (req, res, next) => {
+        const id = parseInt(req.params.userId);
+        logger.info(`Update user with id: ${id}`);
+        userService.delete(id, (error, success) => {
+            if (error) {
+                return next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                res.status(200).json({
+                    status: success.status,
+                    message: success.message,
+                    data: success.data
+                })
+            }
+        })
+    },
+
     getAll: (req, res, next) => {
         logger.trace('getAll');
         userService.getAll((error, success) => {
@@ -44,7 +87,7 @@ let userController = {
     },
 
     getById: (req, res, next) => {
-        const userId = req.params.userId;
+        const userId = parseInt(req.params.userId);
         logger.trace('userController: getById', userId);
         userService.getById(userId, (error, success) => {
             if (error) {

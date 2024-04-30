@@ -44,8 +44,9 @@ const database = {
             if (oldItemId < 0 || oldItemId >= this._data.length) {
                 callback({ message: `Error: id ${oldItemId} does not exist!` }, null);
             } else {
+                item.id = oldItemId;
                 this._data[oldItemId] = item;
-                callback(null, item);
+                callback(null, this._data[oldItemId]);
             }
         }, 1500);
     },
@@ -57,12 +58,12 @@ const database = {
             } else {
                 this._data.slice(itemId, 1);
                 this._data.forEach((entry) => {
-                    if (entry.id > item.id) {
+                    if (entry.id > itemId) {
                         entry.id--;
                     }
                 });
                 this._index--;
-                callback(null, null);
+                callback(null, itemId);
             }
         }, 1500);
     }
