@@ -15,3 +15,5 @@ app.use(userRoutes);
 app.listen(port, () => {
     logger.info(`Server is running on port ${port}`);
 });
+
+export default app;

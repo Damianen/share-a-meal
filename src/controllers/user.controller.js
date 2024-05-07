@@ -7,7 +7,7 @@ let userController = {
         logger.info('create user', user.firstName, user.lastName);
         userService.create(user, (error, success) => {
             if (error) {
-                return next({
+                res.status(500).json({
                     status: error.status,
                     message: error.message,
                     data: {}
@@ -29,7 +29,7 @@ let userController = {
         logger.info(`Update user with id: ${userId}`);
         userService.update(userId, updatedUser, (error, success) => {
             if (error) {
-                return next({
+                res.status(500).json({
                     status: error.status,
                     message: error.message,
                     data: {}
@@ -50,7 +50,7 @@ let userController = {
         logger.info(`Update user with id: ${id}`);
         userService.delete(id, (error, success) => {
             if (error) {
-                return next({
+                res.status(500).json({
                     status: error.status,
                     message: error.message,
                     data: {}
@@ -70,7 +70,7 @@ let userController = {
         logger.trace('getAll');
         userService.getAll((error, success) => {
             if (error) {
-                return next({
+                res.status(500).json({
                     status: error.status,
                     message: error.message,
                     data: {}
@@ -91,7 +91,7 @@ let userController = {
         logger.trace('userController: getById', userId);
         userService.getById(userId, (error, success) => {
             if (error) {
-                return next({
+                res.status(500).json({
                     status: error.status,
                     message: error.message,
                     data: {}

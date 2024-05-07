@@ -8,9 +8,9 @@ should();
 const router = Router();
 
 const notFound = (req, res, next) => {
-    next({
-        status: 404,
-        message: 'Route not found',
+    res.status(400).send({
+        status: 400,
+        message: ex.message,
         data: {}
     });
 }
@@ -42,7 +42,7 @@ const validateUserCreate = (req, res, next) => {
         next();
     } catch (ex) {
         logger.trace('User validation failed:', ex.message)
-        next({
+        res.status(400).send({
             status: 400,
             message: ex.message,
             data: {}
@@ -56,7 +56,6 @@ const validateUserUpdate = (req, res, next) => {
         expect(req.params.userId).to.not.be.empty.and;
         expect(parseInt(req.params.userId)).to.be.a('number');
         logger.trace('User successfully validated');
-        next();
         assert(req.body.firstName, 'Missing or incorrect firstName field');
         expect(req.body.firstName).to.not.be.empty.and;
         expect(req.body.firstName).to.be.a('string');
@@ -78,9 +77,10 @@ const validateUserUpdate = (req, res, next) => {
             /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
             'emailAdress must be a correct email'
         );
+        next();
     } catch (ex) {
         logger.trace('User validation failed:', ex.message)
-        next({
+        res.status(400).send({
             status: 400,
             message: ex.message,
             data: {}
@@ -97,7 +97,7 @@ const validateUserId = (req, res, next) => {
         next();
     } catch (ex) {
         logger.trace('User validation failed:', ex.message)
-        next({
+        res.status(400).send({
             status: 400,
             message: ex.message,
             data: {}

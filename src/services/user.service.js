@@ -14,6 +14,7 @@ const userService = {
             } else {
                 logger.trace(`User created with id ${data.id}.`)
                 callback(null, {
+                    status: 200,
                     message: `User created with id ${data.id}.`,
                     data: data
                 })
@@ -28,14 +29,15 @@ const userService = {
                 logger.info(
                     'error updating user: ',
                     err.message || 'unknown error'
-                )
-                callback(err, null)
+                );
+                callback(err, null);
             } else {
-                logger.trace(`User updated with id ${data.id}.`)
+                logger.trace(`User updated with id ${data.id}.`);
                 callback(null, {
+                    status: 200,
                     message: `User updated with id ${data.id}.`,
                     data: data
-                })
+                });
             }
         })
     },
@@ -52,6 +54,7 @@ const userService = {
             } else {
                 logger.trace(`User deleted with id ${data}.`)
                 callback(null, {
+                    status: 200,
                     message: `User deleted with id ${data}.`,
                 });
             }
@@ -65,6 +68,7 @@ const userService = {
                 callback(err, null)
             } else {
                 callback(null, {
+                    status: 200,
                     message: `Found ${data.length} users.`,
                     data: data
                 });
@@ -79,6 +83,7 @@ const userService = {
                 callback(err, null)
             } else {
                 callback(null, {
+                    status: 200,
                     message: `Found user with id ${userId} .`,
                     data: data
                 });
