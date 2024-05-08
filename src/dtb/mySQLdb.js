@@ -1,5 +1,5 @@
 import mysql from 'mysql';
-import logger from '../logger';
+import logger from '../logger.js';
 import 'dotenv/config';
 
 const config = {
@@ -18,7 +18,7 @@ const config = {
 
 logger.trace(config);
 
-const pool = mysql.createPool(dbConfig);
+const pool = mysql.createPool(config);
 
 pool.on('connection', function (connection) {
     logger.trace(

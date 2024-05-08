@@ -44,7 +44,7 @@ const userService = {
         try {
             const connection = await this.getConnection();
             const result = await this.query();
-            const token = await this.sign();
+            
             logger.trace(`User created with id ${data.id}.`)
             callback(null, {
                 status: 200,
