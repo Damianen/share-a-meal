@@ -1,6 +1,6 @@
 import mysql from 'mysql';
 import logger from '../logger.js';
-import 'dotenv/config';
+import 'dotenv/config'
 
 const config = {
     host: process.env.DB_HOST,

@@ -53,7 +53,7 @@ const userService = {
             });
         } catch (err) {
             logger.info('error creating user: ', err.message || 'unknown error');
-            callback(err.message, null);
+            callback(err, null);
         }
     },
 
@@ -73,7 +73,7 @@ const userService = {
                 });
         } catch (err) {
             logger.info('error updating user: ', err.message || 'unknown error');
-            callback(err.message, null);
+            callback(err, null);
         }
     },
 
@@ -92,7 +92,7 @@ const userService = {
             });
         } catch (err) {
             logger.info('error deleting user: ', err.message || 'unknown error');
-            callback(err.message, null);
+            callback(err, null);
         }
     },
 
@@ -110,7 +110,7 @@ const userService = {
                 data: result
             });
         } catch (err) {
-            callback(err.message, null);
+            callback(err, null);
         }
     },
 
@@ -128,7 +128,7 @@ const userService = {
                 data: result
             });
         } catch (err) {
-            callback(err.message, null);
+            callback(err, null);
         }
     }
 }

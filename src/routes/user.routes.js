@@ -52,7 +52,7 @@ const validateUser = (req, res, next) => {
         assert(req.body.password, 'Missing or incorrect password field');
         expect(req.body.password).to.not.be.empty;
         expect(req.body.password).to.be.a('string');
-        expect(req.body.password).to.be.length.above(3);
+        expect(req.body.password).to.have.lengthOf.above(3);
 
         assert(req.body.phoneNumber, 'Missing or incorrect phone number field');
         expect(req.body.phoneNumber).to.not.be.empty;

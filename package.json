@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha --reporter spec --exit",
-    "dev": "nodemon index.js",
+    "dev": "nodemon server.js",
     "start": "node server.js"
   },
   "keywords": [],

@@ -8,12 +8,13 @@ let userController = {
         userService.create(user, (error, success) => {
             if (error) {
                 next({
-                    ...error,
+                    status: 403,
+                    message: error.message,
                     data: {}
                 });
             }
             if (success) {
-                res.status(200).json({...success});
+                res.status(201).json({...success});
             }
         })
     },
@@ -25,7 +26,8 @@ let userController = {
         userService.update(userId, updatedUser, (error, success) => {
             if (error) {
                 next({
-                    ...error,
+                    status: error.status,
+                    message: error.message,
                     data: {}
                 });
             }
@@ -41,7 +43,8 @@ let userController = {
         userService.delete(id, (error, success) => {
             if (error) {
                 next({
-                    ...error,
+                    status: error.status,
+                    message: error.message,
                     data: {}
                 });
             }
@@ -56,7 +59,8 @@ let userController = {
         userService.getAll((error, success) => {
             if (error) {
                 next({
-                    ...error,
+                    status: error.status,
+                    message: error.message,
                     data: {}
                 });
             }
@@ -72,7 +76,8 @@ let userController = {
         userService.getById(userId, (error, success) => {
             if (error) {
                 next({
-                    ...error,
+                    status: error.status,
+                    message: error.message,
                     data: {}
                 });
             }
