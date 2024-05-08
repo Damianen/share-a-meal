@@ -13,9 +13,9 @@ const getConnection = () => {
     });
 }
 
-const query = (query, values, connection) => {
+const query = (query, connection) => {
     return new Promise((resolve, reject) => {
-        connection.query(query, values, (err, rows, fields) => {
+        connection.query(query, (err, rows, fields) => {
             connection.release();
             if (err) {
                 reject(err);
@@ -42,8 +42,7 @@ const userService = {
         try {
             const connection = await getConnection();
             const result = await query(
-                `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${user.password}', '${user.phoneNumber || ''}', '${user.roles || ''}', '${user.street || ''}', '${user.city || ''}')`,
-                undefined,
+                `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${user.password}', '${user.phoneNumber || ''}', '${user.roles || ''}', '${user.street || ''}', '${user.city || ''}');`,
                 connection
             );
             logger.trace(`User created with id ${result.insertId}.`)
@@ -58,24 +57,23 @@ const userService = {
         }
     },
 
-    update: (userId, user, callback) => {
+    update: async (userId, user, callback) => {
         logger.info('update user with id: ', userId);
-        database.update(userId, user, (err, data) => {
-            if (err) {
-                logger.info(
-                    'error updating user: ',
-                    err.message || 'unknown error'
-                );
-                callback(err, null);
-            } else {
-                logger.trace(`User updated with id ${data.id}.`);
+        const queryString = `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${user.password}', phoneNumber = '${user.phoneNumber || ''}', roles = '${user.roles || ''}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`;
+        logger.info(queryString);
+        try {
+            const connection = await getConnection();
+            const result = await query(queryString, connection);
+            logger.trace(`User updated with id ${userId}.`);
                 callback(null, {
                     status: 200,
-                    message: `User updated with id ${data.id}.`,
-                    data: data
+                    message: `User updated with id ${userId}.`,
+                    data: user
                 });
-            }
-        })
+        } catch (err) {
+            logger.info('error updating user: ', err.message || 'unknown error');
+            callback(err.message, null);
+        }
     },
 
     delete: (userId, callback) => {
