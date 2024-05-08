@@ -105,7 +105,7 @@ const validateUserId = (req, res, next) => {
     }
 }
 
-router.post('/api/user', validateUserCreate, controller.create);
+router.post('/api/user', controller.create);
 router.get('/api/user', controller.getAll);
 router.get('/api/user/:userId', validateUserId, controller.getById);
 
