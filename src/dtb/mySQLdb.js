@@ -1,30 +1,37 @@
 import mysql from 'mysql';
+import logger from '../logger';
 import 'dotenv/config';
 
 const config = {
     host: process.env.DB_HOST,
-    port: '1433',
-    user: process.env.DB_USERNAME,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: 'sakila',
+    database: process.env.DB_NAME,
+
+    connectionLimit: 10,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    multipleStatements: true
 };
 
-console.log(config);
+logger.trace(config);
 
-let connection = mysql.createConnection(config);
+const pool = mysql.createPool(dbConfig);
 
-connection.connect((err) => {
-    if (err) {
-        console.log(err);
-    }
+pool.on('connection', function (connection) {
+    logger.trace(
+        `Connected to database '${connection.config.database}' on '${connection.config.host}:${connection.config.port}'`
+    );
 });
 
-connection.query('SELECT * from actors LIMIT 3', (error, rows, fields) => {
-    if (error) {
-        console.log(error);
-    } else {
-        console.dir(rows);
-    }
+pool.on('acquire', function (connection) {
+    logger.trace('Connection %d acquired', connection.threadId);
 });
 
-connection.end();
+pool.on('release', function (connection) {
+    logger.trace('Connection %d released', connection.threadId);
+});
+
+export default pool;
