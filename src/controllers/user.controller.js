@@ -8,17 +8,12 @@ let userController = {
         userService.create(user, (error, success) => {
             if (error) {
                 next({
-                    status: error.status,
-                    message: error.message,
+                    ...error,
                     data: {}
                 });
             }
             if (success) {
-                res.status(200).json({
-                    status: success.status,
-                    message: success.message,
-                    data: success.data
-                })
+                res.status(200).json({...success});
             }
         })
     },
@@ -30,17 +25,12 @@ let userController = {
         userService.update(userId, updatedUser, (error, success) => {
             if (error) {
                 next({
-                    status: error.status,
-                    message: error.message,
+                    ...error,
                     data: {}
                 });
             }
             if (success) {
-                res.status(200).json({
-                    status: success.status,
-                    message: success.message,
-                    data: success.data
-                })
+                res.status(200).json({...success});
             }
         })
     },
@@ -51,17 +41,12 @@ let userController = {
         userService.delete(id, (error, success) => {
             if (error) {
                 next({
-                    status: error.status,
-                    message: error.message,
+                    ...error,
                     data: {}
                 });
             }
             if (success) {
-                res.status(200).json({
-                    status: success.status,
-                    message: success.message,
-                    data: success.data
-                })
+                res.status(200).json({...success});
             }
         })
     },
@@ -71,17 +56,12 @@ let userController = {
         userService.getAll((error, success) => {
             if (error) {
                 next({
-                    status: error.status,
-                    message: error.message,
+                    ...error,
                     data: {}
                 });
             }
             if (success) {
-                res.status(200).json({
-                    status: 200,
-                    message: success.message,
-                    data: success.data
-                });
+                res.status(200).json({...success});
             }
         });
     },
@@ -92,17 +72,12 @@ let userController = {
         userService.getById(userId, (error, success) => {
             if (error) {
                 next({
-                    status: error.status,
-                    message: error.message,
+                    ...error,
                     data: {}
                 });
             }
             if (success) {
-                res.status(200).json({
-                    status: success.status,
-                    message: success.message,
-                    data: success.data
-                });
+                res.status(200).json({...success});
             }
         });
     }

@@ -42,7 +42,7 @@ const userService = {
         try {
             const connection = await getConnection();
             const result = await query(
-                `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${user.password}', '${user.phoneNumber || ''}', '${user.roles || ''}', '${user.street || ''}', '${user.city || ''}');`,
+                `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${user.password}', '${user.phoneNumber}', '${user.roles}', '${user.street || ''}', '${user.city || ''}');`,
                 connection
             );
             logger.trace(`User created with id ${result.insertId}.`)
@@ -62,7 +62,7 @@ const userService = {
         try {
             const connection = await getConnection();
             const result = await query(
-                `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${user.password}', phoneNumber = '${user.phoneNumber || ''}', roles = '${user.roles || ''}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`, 
+                `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${user.password}', phoneNumber = '${user.phoneNumber}', roles = '${user.roles}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`, 
                 connection
             );
             logger.trace(`User updated with id ${userId}.`);
