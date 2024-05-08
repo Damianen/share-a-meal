@@ -47,7 +47,7 @@ let userController = {
 
     delete: (req, res, next) => {
         const id = parseInt(req.params.userId);
-        logger.info(`Update user with id: ${id}`);
+        logger.info(`Delete user with id: ${id}`);
         userService.delete(id, (error, success) => {
             if (error) {
                 next({

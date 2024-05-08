@@ -59,11 +59,12 @@ const userService = {
 
     update: async (userId, user, callback) => {
         logger.info('update user with id: ', userId);
-        const queryString = `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${user.password}', phoneNumber = '${user.phoneNumber || ''}', roles = '${user.roles || ''}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`;
-        logger.info(queryString);
         try {
             const connection = await getConnection();
-            const result = await query(queryString, connection);
+            const result = await query(
+                `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${user.password}', phoneNumber = '${user.phoneNumber || ''}', roles = '${user.roles || ''}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`, 
+                connection
+            );
             logger.trace(`User updated with id ${userId}.`);
                 callback(null, {
                     status: 200,
@@ -76,53 +77,59 @@ const userService = {
         }
     },
 
-    delete: (userId, callback) => {
+    delete: async (userId, callback) => {
         logger.info('deleting user with id: ', userId);
-        database.delete(userId, (err, data) => {
-            if (err) {
-                logger.info(
-                    'error deleting user: ',
-                    err.message || 'unknown error'
-                )
-                callback(err, null)
-            } else {
-                logger.trace(`User deleted with id ${data}.`)
-                callback(null, {
-                    status: 200,
-                    message: `User deleted with id ${data}.`,
-                });
-            }
-        })
+        try {
+            const connection = await getConnection();
+            const result = await query(
+                `DELETE FROM user WHERE id = ${userId};`, 
+                connection
+            );
+            logger.trace(`User deleted with id ${userId}.`);
+            callback(null, {
+                status: 200,
+                message: `User deleted with id ${userId}.`,
+            });
+        } catch (err) {
+            logger.info('error deleting user: ', err.message || 'unknown error');
+            callback(err.message, null);
+        }
     },
 
-    getAll: (callback) => {
+    getAll: async (callback) => {
         logger.info('getAll');
-        database.getAll((err, data) => {
-            if (err) {
-                callback(err, null)
-            } else {
-                callback(null, {
-                    status: 200,
-                    message: `Found ${data.length} users.`,
-                    data: data
-                });
-            }
-        });
+        try {
+            const connection = await getConnection();
+            const result = await query(
+                `SELECT * FROM user;`, 
+                connection
+            );
+            callback(null, {
+                status: 200,
+                message: `Found ${result.length} users.`,
+                data: result
+            });
+        } catch (err) {
+            callback(err.message, null);
+        }
     },
 
-    getById: (userId, callback) => {
+    getById: async (userId, callback) => {
         logger.info('get info from user with id: ' + userId);
-        database.getById(userId, (err, data) => {
-            if (err) {
-                callback(err, null)
-            } else {
-                callback(null, {
-                    status: 200,
-                    message: `Found user with id ${userId} .`,
-                    data: data
-                });
-            }
-        });
+        try {
+            const connection = await getConnection();
+            const result = await query(
+                `SELECT * FROM user WHERE id = ${userId};`, 
+                connection
+            );
+            callback(null, {
+                status: 200,
+                message: `Found user with id: ${userId}.`,
+                data: result
+            });
+        } catch (err) {
+            callback(err.message, null);
+        }
     }
 }
 
