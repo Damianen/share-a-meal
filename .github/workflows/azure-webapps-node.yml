@@ -93,9 +93,17 @@ jobs:
             - name: Unzip artifact for deployment
               run: unzip main.zip
 
-            - name: Deploy to Azure App Service
+            - name: Login to Azure
+              uses: azure/login@v2
+              with:
+                  client-id: ${{ secrets.AZURE_CLIENTID }}
+                  tenant-id: ${{ secrets.AZURE_TENANTID }}
+                  subscription-id: ${{ secrets.AZURE_SUBSCRIPTIONID }}
+
+            - name: 'Deploy to Azure Web App'
+              id: deploy-to-webapp
               uses: azure/webapps-deploy@v3
               with:
-                app-name: share-a-meal-damian-buskens
-                publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-                package: .
+                  app-name: 'avans-programmeren-4'
+                  slot-name: 'Production'
+                  package: .
