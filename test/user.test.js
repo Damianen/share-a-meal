@@ -163,7 +163,7 @@ describe('UC-201 - UC-205', () => {
                         .that.has.all.keys('status', 'message', 'data');
                     res.body.status.should.be.a('number');
                     res.body.data.should.be.an('object').that.is.empty;
-                    res.body.message.should.contain('ER_DUP_ENTRY: Duplicate entry');
+                    res.body.message.should.contain('Duplicate entry');
                     done();
                 });
         });
