@@ -5,6 +5,7 @@
   "description": "share a meal project",
   "main": "server.js",
   "scripts": {
+    "build": "npm install",
     "test": "node ./node_modules/mocha/bin/mocha --reporter spec --exit",
     "dev": "nodemon server.js",
     "start": "node server.js"
