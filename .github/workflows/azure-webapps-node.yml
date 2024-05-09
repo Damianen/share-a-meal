@@ -56,9 +56,10 @@ jobs:
             MYSQL_ROOT_PASSWORD: root # default root password to use must be 'root'
             DB_HOST: 127.0.0.1
             DB_PORT: 3306
-            DB_DATABASE: share_a_meal
+            DB_NAME: share_a_meal
             DB_USER: root
             DB_PASSWORD: root
+            JWT_KEY: supersecretkey
         services:
             mysql:
                 image: mysql:5.7
