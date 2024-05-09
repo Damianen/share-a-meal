@@ -2,6 +2,7 @@ import database from '../dtb/mySQLdb.js';
 import logger from '../logger.js';
 import jwt from 'jsonwebtoken';
 
+
 const getConnection = () => {
     return new Promise((resolve, reject) => {
         database.getConnection((err, connection) => {
@@ -96,12 +97,20 @@ const userService = {
         }
     },
 
-    getAll: async (callback) => {
+    getAll: async (requestQuery, callback) => {
         logger.info('getAll');
+        if (requestQuery.isActive) {
+            requestQuery.isActive === "true" ? requestQuery.isActive = 1 : requestQuery.isActive = 0;
+        }
+        logger.info(requestQuery);
+        const queryString = Object.values(requestQuery).length != 0 ? 
+            `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE ${Object.keys(requestQuery)[0] + " = '" + Object.values(requestQuery)[0]}' ${Object.keys(requestQuery)[1] ? "AND " + Object.keys(requestQuery)[1] + " = '" + Object.values(requestQuery)[1] + "'": ''};` : 
+            `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user;`;
+        logger.info(queryString);
         try {
             const connection = await getConnection();
             const result = await query(
-                `SELECT * FROM user;`, 
+                queryString, 
                 connection
             );
             callback(null, {
@@ -110,11 +119,44 @@ const userService = {
                 data: result
             });
         } catch (err) {
+            try {
+                const connection = await getConnection();
+                const result = await query(
+                    `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user;`, 
+                    connection
+                );
+                callback(null, {
+                    status: 200,
+                    message: "Invalid query fields",
+                    data: result
+                });
+            } catch (err) {
+                callback(err, null);
+            } 
+        }
+    },
+
+    getById: async (userId, withPassword, callback) => {
+        logger.info('get info from user with id: ' + userId);
+        const queryString = withPassword ? `SELECT * FROM user WHERE id = ${userId};` :
+            `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE id = ${userId};`;
+        try {
+            const connection = await getConnection();
+            const result = await query(
+                queryString, 
+                connection
+            );
+            callback(null, {
+                status: 200,
+                message: `Found user with id: ${userId}.`,
+                data: result
+            });
+        } catch (err) {
             callback(err, null);
         }
     },
 
-    getById: async (userId, callback) => {
+    getProfile: async (userId, callback) => {
         logger.info('get info from user with id: ' + userId);
         try {
             const connection = await getConnection();

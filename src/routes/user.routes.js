@@ -1,8 +1,9 @@
-import { Router } from 'express'
-import assert from 'assert'
-import { should, expect } from 'chai'
-import controller from '../controllers/user.controller.js'
-import logger from '../logger.js'
+import { Router } from 'express';
+import assert from 'assert';
+import { should, expect } from 'chai';
+import controller from '../controllers/user.controller.js';
+import logger from '../logger.js';
+import { validateToken } from '../auth.js';
 
 should();
 const router = Router();
@@ -120,16 +121,27 @@ const validateLogin = (req, res, next) => {
     }
 }
 
-router.get('/api/info', notFound);
-router.get('/api/user', controller.getAll);
-router.get('/api/user/:userId', validateUserId, controller.getById);
-router.get('/api/user/profile', notFound);
+router.get('/api/user', validateToken, controller.getAll);
+router.get('/api/user/:userId', validateUserId, validateToken, controller.getById);
+router.get('/api/user/profile', validateToken, controller.profile);
 
-router.post('/api/user', validateUser, controller.create);
+router.post('/api/user', validateToken, validateUser, controller.create);
 router.post('/api/login', validateLogin, controller.login);
 
-router.put('/api/user/:userId', validateUser, validateUserId,controller.update);
+router.put('/api/user', validateToken, validateUser, validateUserId,controller.update);
 
-router.delete('/api/user/:userId', validateUserId ,controller.delete);
+router.delete('/api/user', validateToken, validateUserId, controller.delete);
+
+router.get('/api/info', (req, res, next) => {
+    res.json({
+        status: 200,
+        message: "System info",
+        data: {
+            studentName: "Damian Buskens",
+            studentNumber: 2206799,
+            description: "To help social connection we want to share meals with this site its possible!",
+        }
+    });
+});
 
 export default router;

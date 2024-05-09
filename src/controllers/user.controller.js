@@ -1,5 +1,6 @@
 import userService from "../services/user.service.js";
 import logger from "../logger.js";
+import { validateToken } from "../auth.js";
 
 let userController = {
     create: (req, res, next) => {
@@ -21,7 +22,7 @@ let userController = {
 
     update: (req, res, next) => {
         const updatedUser = req.body;
-        const userId = parseInt(req.params.userId);
+        const userId = res.locals.userId;
         logger.info(`Update user with id: ${userId}`);
         userService.update(userId, updatedUser, (error, success) => {
             if (error) {
@@ -38,7 +39,7 @@ let userController = {
     },
 
     delete: (req, res, next) => {
-        const id = parseInt(req.params.userId);
+        const id = res.locals.userId;
         logger.info(`Delete user with id: ${id}`);
         userService.delete(id, (error, success) => {
             if (error) {
@@ -55,9 +56,8 @@ let userController = {
     },
 
     getAll: (req, res, next) => {
-        logger.trace(req.query);
         logger.trace('getAll');
-        userService.getAll((error, success) => {
+        userService.getAll(req.query, (error, success) => {
             if (error) {
                 next({
                     status: error.status,
@@ -73,8 +73,13 @@ let userController = {
 
     getById: (req, res, next) => {
         const userId = parseInt(req.params.userId);
+        let withPassword = false;
+        logger.trace(res.locals.userId);
+        if (res.locals.userId === userId) {
+            withPassword = true;
+        }
         logger.trace('userController: getById', userId);
-        userService.getById(userId, (error, success) => {
+        userService.getById(userId, withPassword, (error, success) => {
             if (error) {
                 next({
                     status: error.status,
@@ -102,7 +107,23 @@ let userController = {
                 res.status(200).json({...success});
             }
         });
-    }
+    },
+
+    profile: (req, res, next) => {
+        logger.trace('userController: getProfile', req.body.userId);
+        userService.getProfile(req.body.userId, (error, success) => {
+            if (error) {
+                next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                res.status(200).json({...success});
+            }
+        });
+    },
 }
 
 export default userController;
