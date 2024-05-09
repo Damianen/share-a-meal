@@ -83,12 +83,12 @@ jobs:
 
             - name: Import the database
               run: |
-                  mysql -uroot -p${{env.MYSQL_ROOT_PASSWORD}} ${{env.DB_DATABASE}} < share-a-meal.sql
-                  mysql -uroot -p${{env.MYSQL_ROOT_PASSWORD}} ${{env.DB_DATABASE}} -e "SHOW TABLES;"
+                  mysql -uroot -p${{env.MYSQL_ROOT_PASSWORD}} ${{env.DB_NAME}} < share-a-meal.sql
+                  mysql -uroot -p${{env.MYSQL_ROOT_PASSWORD}} ${{env.DB_NAME}} -e "SHOW TABLES;"
 
             - name: npm test
               run: |
-                  npm test -- --DB_PASSWORD $MYSQL_ROOT_PASSWORD --DB_USER root --DB_NAME $DB_DATABASE --DB_PORT $DB_PORT
+                  npm test -- --DB_PASSWORD $MYSQL_ROOT_PASSWORD --DB_USER root --DB_NAME $DB_NAME --DB_PORT $DB_PORT
 
     deploy:
         runs-on: ubuntu-latest
