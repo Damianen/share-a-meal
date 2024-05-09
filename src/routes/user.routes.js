@@ -60,7 +60,7 @@ const validateUser = (req, res, next) => {
         expect(req.body.phoneNumber).to.be.a('string');
         expect(req.body.phoneNumber).to.match(
             /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
-            'phone number must be a string'
+            'phone number must be a correct phone number'
         );
 
         assert(req.body.roles, 'Missing or incorrect roles field');
@@ -122,15 +122,15 @@ const validateLogin = (req, res, next) => {
 }
 
 router.get('/api/user', validateToken, controller.getAll);
-router.get('/api/user/:userId', validateUserId, validateToken, controller.getById);
 router.get('/api/user/profile', validateToken, controller.profile);
+router.get('/api/user/:userId',  validateToken, validateUserId, controller.getById);
 
-router.post('/api/user', validateToken, validateUser, controller.create);
+router.post('/api/user', validateUser, controller.create);
 router.post('/api/login', validateLogin, controller.login);
 
-router.put('/api/user', validateToken, validateUser, validateUserId,controller.update);
+router.put('/api/user/:userId', validateToken, validateUser, validateUserId, controller.update);
 
-router.delete('/api/user', validateToken, validateUserId, controller.delete);
+router.delete('/api/user/:userId', validateToken, validateUserId, controller.delete);
 
 router.get('/api/info', (req, res, next) => {
     res.json({

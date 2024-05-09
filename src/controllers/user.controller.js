@@ -24,7 +24,7 @@ let userController = {
         const updatedUser = req.body;
         const userId = res.locals.userId;
         logger.info(`Update user with id: ${userId}`);
-        userService.update(userId, updatedUser, (error, success) => {
+        userService.update(userId, parseInt(req.params.userId), updatedUser, (error, success) => {
             if (error) {
                 next({
                     status: error.status,
@@ -41,7 +41,7 @@ let userController = {
     delete: (req, res, next) => {
         const id = res.locals.userId;
         logger.info(`Delete user with id: ${id}`);
-        userService.delete(id, (error, success) => {
+        userService.delete(id, parseInt(req.params.userId), (error, success) => {
             if (error) {
                 next({
                     status: error.status,
@@ -110,8 +110,8 @@ let userController = {
     },
 
     profile: (req, res, next) => {
-        logger.trace('userController: getProfile', req.body.userId);
-        userService.getProfile(req.body.userId, (error, success) => {
+        logger.trace('userController: getProfile', res.locals.userId);
+        userService.getProfile(res.locals.userId, (error, success) => {
             if (error) {
                 next({
                     status: error.status,

@@ -58,11 +58,22 @@ const userService = {
         }
     },
 
-    update: async (userId, user, callback) => {
+    update: async (userId, validationId, user, callback) => {
         logger.info('update user with id: ', userId);
         try {
-            const connection = await getConnection();
+            const connection1 = await getConnection();
             const result = await query(
+                `SELECT * FROM user WHERE id = ${validationId};`, 
+                connection1
+            );
+            if (!result || result.length < 1) {
+                throw { status: 404, message: `User with id: ${validationId} not found!`, data: {}};
+            }
+            if (validationId != userId){
+                throw { status: 403, message: "Not authorized to update this profile", data: {}};
+            }
+            const connection = await getConnection();
+            await query(
                 `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${user.password}', phoneNumber = '${user.phoneNumber}', roles = '${user.roles}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`, 
                 connection
             );
@@ -78,11 +89,22 @@ const userService = {
         }
     },
 
-    delete: async (userId, callback) => {
+    delete: async (userId, validationId, callback) => {
         logger.info('deleting user with id: ', userId);
         try {
-            const connection = await getConnection();
+            const connection1 = await getConnection();
             const result = await query(
+                `SELECT * FROM user WHERE id = ${validationId};`, 
+                connection1
+            );
+            if (!result || result.length < 1) {
+                throw { status: 404, message: `User with id: ${validationId} not found!`, data: {}};
+            }
+            if (validationId != userId){
+                throw { status: 403, message: "Not authorized to delete this profile!", data: {}};
+            }
+            const connection = await getConnection();
+            await query(
                 `DELETE FROM user WHERE id = ${userId};`, 
                 connection
             );
@@ -146,10 +168,13 @@ const userService = {
                 queryString, 
                 connection
             );
+            if (!result || result.length < 1) {
+                throw { status: 404, message: `User with id: ${userId} not found!`, data: {}};
+            }
             callback(null, {
                 status: 200,
                 message: `Found user with id: ${userId}.`,
-                data: result
+                data: result[0]
             });
         } catch (err) {
             callback(err, null);
@@ -167,7 +192,7 @@ const userService = {
             callback(null, {
                 status: 200,
                 message: `Found user with id: ${userId}.`,
-                data: result
+                data: result[0]
             });
         } catch (err) {
             callback(err, null);
@@ -182,7 +207,7 @@ const userService = {
                 `SELECT * FROM user WHERE emailAdress = '${login.emailAdress}';`,
                 connection
             );
-            if (data[0].password === login.password && data && data.length === 1) {
+            if (data && data.length === 1 && data[0].password === login.password) {
                 logger.trace('passwords matched, sending user info and token');
                 const { password, ...userinfo } = data[0];
                 const payload = { userId: userinfo.id };
