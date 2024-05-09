@@ -55,6 +55,7 @@ let userController = {
     },
 
     getAll: (req, res, next) => {
+        logger.trace(req.query);
         logger.trace('getAll');
         userService.getAll((error, success) => {
             if (error) {
@@ -74,6 +75,22 @@ let userController = {
         const userId = parseInt(req.params.userId);
         logger.trace('userController: getById', userId);
         userService.getById(userId, (error, success) => {
+            if (error) {
+                next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                res.status(200).json({...success});
+            }
+        });
+    },
+
+    login: (req, res, next) => {
+        logger.trace('userController: login', req.body.emailAdress);
+        userService.login(req.body, (error, success) => {
             if (error) {
                 next({
                     status: error.status,

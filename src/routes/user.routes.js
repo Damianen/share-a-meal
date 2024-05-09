@@ -8,9 +8,9 @@ should();
 const router = Router();
 
 const notFound = (req, res, next) => {
-    res.status(400).send({
-        status: 400,
-        message: ex.message,
+    res.status(404).send({
+        status: 404,
+        message: "404 page not found",
         data: {}
     });
 }
@@ -94,11 +94,42 @@ const validateUserId = (req, res, next) => {
     }
 }
 
+const validateLogin = (req, res, next) => {
+    try {
+        assert(req.body.emailAdress, 'Missing or incorrect emailAdress field');
+        expect(req.body.emailAdress).to.not.be.empty;
+        expect(req.body.emailAdress).to.be.a('string');
+        expect(req.body.emailAdress).to.match(
+            /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+            'emailAdress must be a correct email'
+        );
+
+        assert(req.body.password, 'Missing or incorrect password field');
+        expect(req.body.password).to.not.be.empty;
+        expect(req.body.password).to.be.a('string');
+        expect(req.body.password).to.have.lengthOf.above(3);
+
+        next();
+    } catch (ex) {
+        logger.trace('User validation failed:', ex.message)
+        res.status(400).send({
+            status: 400,
+            message: ex.message,
+            data: {}
+        });
+    }
+}
+
+router.get('/api/info', notFound);
 router.get('/api/user', controller.getAll);
 router.get('/api/user/:userId', validateUserId, controller.getById);
+router.get('/api/user/profile', notFound);
 
 router.post('/api/user', validateUser, controller.create);
+router.post('/api/login', validateLogin, controller.login);
+
 router.put('/api/user/:userId', validateUser, validateUserId,controller.update);
+
 router.delete('/api/user/:userId', validateUserId ,controller.delete);
 
 export default router;

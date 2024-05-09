@@ -130,6 +130,32 @@ const userService = {
         } catch (err) {
             callback(err, null);
         }
+    },
+
+    login: async (login, callback) => {
+        logger.trace(`userService: login ${login.emailAdress}`);
+        try {
+            const connection = await getConnection();
+            const data = await query(
+                `SELECT * FROM user WHERE emailAdress = '${login.emailAdress}';`,
+                connection
+            );
+            if (data[0].password === login.password && data && data.length === 1) {
+                logger.trace('passwords matched, sending user info and token');
+                const { password, ...userinfo } = data[0];
+                const payload = { userId: userinfo.id };
+                const token = await sign(payload, process.env.JWT_KEY, {expiresIn: '12d'});
+                callback(null, {
+                    status: 200,
+                    message: `Login successful!`,
+                    data: { ...userinfo, token}
+                });
+            } else {
+                throw { status: 409, message: 'User not found or password invalid', data: {}};
+            }
+        } catch (err) {
+            callback(err, null);
+        }
     }
 }
 
