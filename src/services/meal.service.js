@@ -3,7 +3,7 @@ import logger from '../logger.js';
 
 const mealService = {
     create: async (meal, userId, callback) => {
-        logger.info('create meal', meal);
+        logger.warn('create meal', meal);
         try {
             const result = await query(
                 'INSERT INTO meal (isActive, isVega, isVegan, isToTakeHome, dateTime, maxAmountOfParticipants, price, imageURL, cookId, createDate, updateDate, name, description, allergenes)' +
