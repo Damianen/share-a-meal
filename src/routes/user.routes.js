@@ -8,14 +8,6 @@ import { validateToken } from '../auth.js';
 should();
 const router = Router();
 
-const notFound = (req, res, next) => {
-    res.status(404).send({
-        status: 404,
-        message: "404 page not found",
-        data: {}
-    });
-}
-
 const validateUser = (req, res, next) => {
     try {
         assert(req.body.firstName, 'Missing or incorrect firstName field');
@@ -47,7 +39,7 @@ const validateUser = (req, res, next) => {
         expect(req.body.isActive).to.be.a('number');
         expect(req.body.isActive).to.match(
             /^[01]$/,
-            'emailAdress must be a correct email'
+            'isActive must be a correct email'
         );
 
         assert(req.body.password, 'Missing or incorrect password field');
@@ -131,17 +123,5 @@ router.post('/api/login', validateLogin, controller.login);
 router.put('/api/user/:userId', validateToken, validateUser, validateUserId, controller.update);
 
 router.delete('/api/user/:userId', validateToken, validateUserId, controller.delete);
-
-router.get('/api/info', (req, res, next) => {
-    res.json({
-        status: 200,
-        message: "System info",
-        data: {
-            studentName: "Damian Buskens",
-            studentNumber: 2206799,
-            description: "To help social connection we want to share meals with this site its possible!",
-        }
-    });
-});
 
 export default router;

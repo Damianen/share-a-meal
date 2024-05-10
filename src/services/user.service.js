@@ -1,30 +1,6 @@
-import database from '../dtb/mySQLdb.js';
+import query from '../dtb/mySQLdb.js';
 import logger from '../logger.js';
 import jwt from 'jsonwebtoken';
-
-
-const getConnection = () => {
-    return new Promise((resolve, reject) => {
-        database.getConnection((err, connection) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(connection);
-        });
-    });
-}
-
-const query = (query, connection) => {
-    return new Promise((resolve, reject) => {
-        connection.query(query, (err, rows, fields) => {
-            connection.release();
-            if (err) {
-                reject(err);
-            }
-            resolve(rows);
-        });
-    });
-}
 
 const sign = (payload, key, expires) => {
     return new Promise((resolve, reject) => {
@@ -41,10 +17,8 @@ const userService = {
     create: async (user, callback) => {
         logger.info('create user', user);
         try {
-            const connection = await getConnection();
             const result = await query(
                 `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${user.password}', '${user.phoneNumber}', '${user.roles}', '${user.street || ''}', '${user.city || ''}');`,
-                connection
             );
             logger.trace(`User created with id ${result.insertId}.`)
             callback(null, {
@@ -61,10 +35,8 @@ const userService = {
     update: async (userId, validationId, user, callback) => {
         logger.info('update user with id: ', userId);
         try {
-            const connection1 = await getConnection();
             const result = await query(
-                `SELECT * FROM user WHERE id = ${validationId};`, 
-                connection1
+                `SELECT * FROM user WHERE id = ${validationId};`
             );
             if (!result || result.length < 1) {
                 throw { status: 404, message: `User with id: ${validationId} not found!`, data: {}};
@@ -72,10 +44,8 @@ const userService = {
             if (validationId != userId){
                 throw { status: 403, message: "Not authorized to update this profile", data: {}};
             }
-            const connection = await getConnection();
             await query(
                 `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${user.password}', phoneNumber = '${user.phoneNumber}', roles = '${user.roles}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`, 
-                connection
             );
             logger.trace(`User updated with id ${userId}.`);
                 callback(null, {
@@ -92,10 +62,8 @@ const userService = {
     delete: async (userId, validationId, callback) => {
         logger.info('deleting user with id: ', userId);
         try {
-            const connection1 = await getConnection();
             const result = await query(
                 `SELECT * FROM user WHERE id = ${validationId};`, 
-                connection1
             );
             if (!result || result.length < 1) {
                 throw { status: 404, message: `User with id: ${validationId} not found!`, data: {}};
@@ -103,10 +71,8 @@ const userService = {
             if (validationId != userId){
                 throw { status: 403, message: "Not authorized to delete this profile!", data: {}};
             }
-            const connection = await getConnection();
             await query(
                 `DELETE FROM user WHERE id = ${userId};`, 
-                connection
             );
             logger.trace(`User deleted with id ${userId}.`);
             callback(null, {
@@ -130,10 +96,8 @@ const userService = {
             `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user;`;
         logger.info(queryString);
         try {
-            const connection = await getConnection();
             const result = await query(
                 queryString, 
-                connection
             );
             callback(null, {
                 status: 200,
@@ -142,10 +106,8 @@ const userService = {
             });
         } catch (err) {
             try {
-                const connection = await getConnection();
                 const result = await query(
                     `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user;`, 
-                    connection
                 );
                 callback(null, {
                     status: 200,
@@ -163,10 +125,8 @@ const userService = {
         const queryString = withPassword ? `SELECT * FROM user WHERE id = ${userId};` :
             `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE id = ${userId};`;
         try {
-            const connection = await getConnection();
             const result = await query(
                 queryString, 
-                connection
             );
             if (!result || result.length < 1) {
                 throw { status: 404, message: `User with id: ${userId} not found!`, data: {}};
@@ -184,10 +144,8 @@ const userService = {
     getProfile: async (userId, callback) => {
         logger.info('get info from user with id: ' + userId);
         try {
-            const connection = await getConnection();
             const result = await query(
                 `SELECT * FROM user WHERE id = ${userId};`, 
-                connection
             );
             callback(null, {
                 status: 200,
@@ -202,10 +160,8 @@ const userService = {
     login: async (login, callback) => {
         logger.trace(`userService: login ${login.emailAdress}`);
         try {
-            const connection = await getConnection();
             const data = await query(
                 `SELECT * FROM user WHERE emailAdress = '${login.emailAdress}';`,
-                connection
             );
             if (data && data.length === 1 && data[0].password === login.password) {
                 logger.trace('passwords matched, sending user info and token');

@@ -34,4 +34,28 @@ pool.on('release', function (connection) {
     logger.trace('Connection %d released', connection.threadId);
 });
 
-export default pool;
+const getConnection = () => {
+    return new Promise((resolve, reject) => {
+        pool.getConnection((err, connection) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(connection);
+        });
+    });
+}
+
+const query = async (query) => {
+    const connection = await getConnection();
+    return new Promise((resolve, reject) => {
+        connection.query(query, (err, rows, fields) => {
+            connection.release();
+            if (err) {
+                reject(err);
+            }
+            resolve(rows);
+        });
+    });
+}
+
+export default query;

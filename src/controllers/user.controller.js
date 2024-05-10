@@ -2,7 +2,7 @@ import userService from "../services/user.service.js";
 import logger from "../logger.js";
 import { validateToken } from "../auth.js";
 
-let userController = {
+const userController = {
     create: (req, res, next) => {
         const user = req.body;
         logger.info('create user', user.firstName, user.lastName);

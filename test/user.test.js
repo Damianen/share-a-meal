@@ -1,4 +1,4 @@
-import database from '../src/dtb/mySQLdb.js';
+import query from '../src/dtb/mySQLdb.js';
 import server from '../server.js';
 import { should, use } from 'chai';
 import chaiHttp from 'chai-http';
@@ -31,29 +31,6 @@ const INSERT_MEALS =
 
 const endpointToTest = '/api/user';
 
-const getConnection = () => {
-    return new Promise((resolve, reject) => {
-        database.getConnection((err, connection) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(connection);
-        });
-    });
-}
-
-const query = (query, connection) => {
-    return new Promise((resolve, reject) => {
-        connection.query(query, (err, rows, fields) => {
-            connection.release();
-            if (err) {
-                reject(err);
-            }
-            resolve();
-        });
-    });
-}
-
 describe('UC-201 - UC-205', () => {
     beforeEach((done) => {
         logger.debug('Before done');
@@ -64,9 +41,7 @@ describe('UC-201 - UC-205', () => {
         beforeEach((done) => {
             logger.debug('beforeEach called');
             try {
-                getConnection()
-                    .then((connection) => query(CLEAR_DB + INSERT_USER, connection))
-                    .then(done, done);
+                query(CLEAR_DB + INSERT_USER).then(() => done());
             } catch (err) {
                 throw err;
             }
@@ -197,9 +172,7 @@ describe('UC-201 - UC-205', () => {
         beforeEach((done) => {
             logger.debug('beforeEach called');
             try {
-                getConnection()
-                    .then((connection) => query(CLEAR_DB + INSERT_USER + INSERT_USER2, connection))
-                    .then(done, done);
+                query(CLEAR_DB + INSERT_USER + INSERT_USER2).then(() => done());
             } catch (err) {
                 throw err;
             }
@@ -295,9 +268,7 @@ describe('UC-201 - UC-205', () => {
         beforeEach((done) => {
             logger.debug('beforeEach called');
             try {
-                getConnection()
-                    .then((connection) => query(CLEAR_DB + INSERT_USER + INSERT_USER2, connection))
-                    .then(done, done);
+                query(CLEAR_DB + INSERT_USER + INSERT_USER2).then(() => done());
             } catch (err) {
                 throw err;
             }
@@ -342,9 +313,7 @@ describe('UC-201 - UC-205', () => {
         beforeEach((done) => {
             logger.debug('beforeEach called');
             try {
-                getConnection()
-                    .then((connection) => query(CLEAR_DB + INSERT_USER + INSERT_USER2, connection))
-                    .then(done, done);
+                query(CLEAR_DB + INSERT_USER + INSERT_USER2).then(() => done());
             } catch (err) {
                 throw err;
             }
@@ -406,9 +375,7 @@ describe('UC-201 - UC-205', () => {
         beforeEach((done) => {
             logger.debug('beforeEach called');
             try {
-                getConnection()
-                    .then((connection) => query(CLEAR_DB + INSERT_USER + INSERT_USER2, connection))
-                    .then(done, done);
+                query(CLEAR_DB + INSERT_USER + INSERT_USER2).then(() => done());
             } catch (err) {
                 throw err;
             }
@@ -574,9 +541,7 @@ describe('UC-201 - UC-205', () => {
         beforeEach((done) => {
             logger.debug('beforeEach called');
             try {
-                getConnection()
-                    .then((connection) => query(CLEAR_DB + INSERT_USER + INSERT_USER2, connection))
-                    .then(done, done);
+                query(CLEAR_DB + INSERT_USER + INSERT_USER2).then(() => done());
             } catch (err) {
                 throw err;
             }
