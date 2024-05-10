@@ -53,7 +53,7 @@ jobs:
                   name: node-app
 
             - name: Unzip artifact for tests
-              run: unzip main.zip
+              run: unzip release.zip
 
             - name: Start MySQL connection from host
               run: |
