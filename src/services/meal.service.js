@@ -4,10 +4,12 @@ import logger from '../logger.js';
 const mealService = {
     create: async (meal, userId, callback) => {
         logger.warn('create meal', meal);
+        const date = new Date();
+        logger.warn();
         try {
             const result = await query(
                 'INSERT INTO meal (isActive, isVega, isVegan, isToTakeHome, dateTime, maxAmountOfParticipants, price, imageURL, cookId, createDate, updateDate, name, description, allergenes)' +
-                `VALUES (${meal.isActive}, ${meal.isVega}, ${meal.isVegan}, ${meal.isToTakeHome}, '${meal.dateTime}', ${meal.maxAmountOfParticipants}, ${meal.price}, '${meal.imageURL}', ${userId}, '${meal.createDate}', '${Date.now().toString()}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`,
+                `VALUES (${meal.isActive}, ${meal.isVega}, ${meal.isVegan}, ${meal.isToTakeHome}, '${meal.dateTime}', ${meal.maxAmountOfParticipants}, ${meal.price}, '${meal.imageURL}', ${userId}, '${meal.createDate}', '${date.toJSON()}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`,
             );
             logger.trace(`meal created with id ${result.insertId}.`)
             callback(null, {
