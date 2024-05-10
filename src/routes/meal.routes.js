@@ -12,7 +12,7 @@ const router = Router();
 const validateMealId = (req, res, next) => {
     try {
         assert(req.params.mealId, 'Missing or incorrect id!');
-        expect(req.params.mealId).to.not.be.empty;
+        expect(req.params.mealId).to.not.be.undefined;
         expect(parseInt(req.params.mealId)).to.be.a('number');
         logger.trace('Meal successfully validated');
         next();
@@ -29,7 +29,7 @@ const validateMealId = (req, res, next) => {
 const validateMeal = (req, res, next) => {
     try {
         assert(req.body.isActive, 'Missing or incorrect is active field');
-        expect(req.body.isActive).to.not.be.empty;
+        expect(req.body.isActive).to.not.be.undefined;
         expect(req.body.isActive).to.be.a('number');
         expect(req.body.isActive).to.match(
             /^[01]$/,
@@ -37,7 +37,7 @@ const validateMeal = (req, res, next) => {
         );
 
         assert(req.body.isVega, 'Missing or incorrect is vega field');
-        expect(req.body.isVega).to.not.be.empty;
+        expect(req.body.isVega).to.not.be.undefined;
         expect(req.body.isVega).to.be.a('number');
         expect(req.body.isVega).to.match(
             /^[01]$/,
@@ -45,7 +45,7 @@ const validateMeal = (req, res, next) => {
         );
 
         assert(req.body.isVegan, 'Missing or incorrect is vegan field');
-        expect(req.body.isVegan).to.not.be.empty;
+        expect(req.body.isVegan).to.not.be.undefined;
         expect(req.body.isVegan).to.be.a('number');
         expect(req.body.isVegan).to.match(
             /^[01]$/,
@@ -53,7 +53,7 @@ const validateMeal = (req, res, next) => {
         );
 
         assert(req.body.isToTakeHome, 'Missing or incorrect is to take home field');
-        expect(req.body.isToTakeHome).to.not.be.empty;
+        expect(req.body.isToTakeHome).to.not.be.undefined;
         expect(req.body.isToTakeHome).to.be.a('number');
         expect(req.body.isToTakeHome).to.match(
             /^[01]$/,
@@ -63,17 +63,14 @@ const validateMeal = (req, res, next) => {
         assert(req.body.dateTime, 'Missing or incorrect date time field');
         expect(req.body.dateTime).to.not.be.empty;
         expect(req.body.dateTime).to.be.a('String');
-        expect(req.body.dateTime).to.match(
-            /(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/,
-            'date time must be a correct date and time'
-        );
+        
 
         assert(req.body.maxAmountOfParticipants, 'Missing or incorrect max amount of participants field');
-        expect(req.body.maxAmountOfParticipants).to.not.be.empty;
+        expect(req.body.maxAmountOfParticipants).to.not.be.undefined;
         expect(req.body.maxAmountOfParticipants).to.be.a('number').that.is.above(1);
 
         assert(req.body.price, 'Missing or incorrect price field');
-        expect(req.body.price).to.not.be.empty;
+        expect(req.body.price).to.not.be.undefined;
         expect(req.body.price).to.be.a('number').that.is.above(0);
 
         assert(req.body.imgURL, 'Missing or incorrect image URL');
@@ -87,12 +84,9 @@ const validateMeal = (req, res, next) => {
         assert(req.body.createDate, 'Missing or incorrect create date field');
         expect(req.body.createDate).to.not.be.empty;
         expect(req.body.createDate).to.be.a('String');
-        expect(req.body.createDate).to.match(
-            /(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/,
-            'create date must be a correct date and time'
-        );
+        
 
-        assert(req.body.name, 'Missing or incorrect name');
+        assert(req.body.name, 'Missing or incorrect name field');
         expect(req.body.name).to.not.be.empty;
         expect(req.body.name).to.be.a('String');
 
@@ -111,9 +105,10 @@ const validateMeal = (req, res, next) => {
     }
 }
 
+router.get('/api/meal', mealController.getAll);
+router.get('/api/meal/:mealId', validateMealId, mealController.getById);
+
 router.post('/api/meal', validateToken, validateMeal, mealController.create);
-router.get('/api/meal', validateToken, mealController.getAll);
-router.get('/api/meal/:mealId', validateToken, validateMealId, mealController.getById);
-router.delete('/api/meal/:mealId', validateMealId, mealController.delete);
+router.delete('/api/meal/:mealId', validateToken, validateMealId, mealController.delete);
 
 export default router;

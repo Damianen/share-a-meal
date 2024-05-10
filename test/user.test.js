@@ -7,10 +7,9 @@ import logger from '../src/logger.js';
 import { assert } from 'chai';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+import chaiServer from './meal.test.js';
 
-should();
-const chaiServer = use(chaiHttp);
-setLevel('warn');
+
 
 const CLEAR_MEAL_TABLE = 'DELETE IGNORE FROM `meal`;';
 const CLEAR_PARTICIPANTS_TABLE = 'DELETE IGNORE FROM `meal_participants_user`;';

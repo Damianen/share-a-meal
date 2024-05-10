@@ -39,7 +39,8 @@ const mealController = {
     },
 
     getAll: (req, res, next) => {
-        logger.trace('getAll the meals');
+
+        logger.warn('getAll the meals');
         mealService.getAll((error, success) => {
             if (error) {
                 next({
