@@ -16,7 +16,7 @@ const mealService = {
                 data: meal
             });
         } catch (err) {
-            logger.info('error creating meal: ', err.message || 'unknown error');
+            logger.warn('error creating meal: ', err.message || 'unknown error');
             callback(err, null);
         }
     },
