@@ -1,11 +1,10 @@
 import userService from "../services/user.service.js";
 import logger from "../logger.js";
-import { validateToken } from "../auth.js";
 
 const userController = {
     create: (req, res, next) => {
         const user = req.body;
-        logger.info('create user', user.firstName, user.lastName);
+        logger.info("UserController: create user");
         userService.create(user, (error, success) => {
             if (error) {
                 next({
@@ -17,13 +16,13 @@ const userController = {
             if (success) {
                 res.status(201).json({...success});
             }
-        })
+        });
     },
 
     update: (req, res, next) => {
         const updatedUser = req.body;
         const userId = res.locals.userId;
-        logger.info(`Update user with id: ${userId}`);
+        logger.info("UserController: update user");
         userService.update(userId, parseInt(req.params.userId), updatedUser, (error, success) => {
             if (error) {
                 next({
@@ -35,12 +34,12 @@ const userController = {
             if (success) {
                 res.status(200).json({...success});
             }
-        })
+        });
     },
 
     delete: (req, res, next) => {
         const id = res.locals.userId;
-        logger.info(`Delete user with id: ${id}`);
+        logger.info("UserController: delete user");
         userService.delete(id, parseInt(req.params.userId), (error, success) => {
             if (error) {
                 next({
@@ -52,11 +51,11 @@ const userController = {
             if (success) {
                 res.status(200).json({...success});
             }
-        })
+        });
     },
 
     getAll: (req, res, next) => {
-        logger.trace('getAll');
+        logger.info("UserController: getAll users");
         userService.getAll(req.query, (error, success) => {
             if (error) {
                 next({
@@ -74,11 +73,10 @@ const userController = {
     getById: (req, res, next) => {
         const userId = parseInt(req.params.userId);
         let withPassword = false;
-        logger.trace(res.locals.userId);
         if (res.locals.userId === userId) {
             withPassword = true;
         }
-        logger.trace('userController: getById', userId);
+        logger.info("UserController: get user by id");
         userService.getById(userId, withPassword, (error, success) => {
             if (error) {
                 next({
@@ -94,7 +92,7 @@ const userController = {
     },
 
     login: (req, res, next) => {
-        logger.trace('userController: login', req.body.emailAdress);
+        logger.info("UserController: login");
         userService.login(req.body, (error, success) => {
             if (error) {
                 next({
@@ -110,7 +108,7 @@ const userController = {
     },
 
     profile: (req, res, next) => {
-        logger.trace('userController: getProfile', res.locals.userId);
+        logger.info("UserController: get profile");
         userService.getProfile(res.locals.userId, (error, success) => {
             if (error) {
                 next({

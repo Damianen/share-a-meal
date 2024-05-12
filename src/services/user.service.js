@@ -15,7 +15,7 @@ const sign = (payload, key, expires) => {
 
 const userService = {
     create: async (user, callback) => {
-        logger.info('create user', user);
+        logger.trace(`UserService: create new user with email: ${user.emailAdress}`);
         try {
             const result = await query(
                 `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${user.password}', '${user.phoneNumber}', '${user.roles}', '${user.street || ''}', '${user.city || ''}');`,
@@ -33,7 +33,7 @@ const userService = {
     },
 
     update: async (userId, validationId, user, callback) => {
-        logger.info('update user with id: ', userId);
+        logger.trace(`UserService: update user with id: ${userId}`);
         try {
             const result = await query(
                 `SELECT * FROM user WHERE id = ${validationId};`
@@ -54,13 +54,13 @@ const userService = {
                     data: user
                 });
         } catch (err) {
-            logger.info('error updating user: ', err.message || 'unknown error');
+            logger.warn('error updating user: ', err.message || 'unknown error');
             callback(err, null);
         }
     },
 
     delete: async (userId, validationId, callback) => {
-        logger.info('deleting user with id: ', userId);
+        logger.trace(`UserService: delete user with id ${userId}`);
         try {
             const result = await query(
                 `SELECT * FROM user WHERE id = ${validationId};`, 
@@ -86,7 +86,7 @@ const userService = {
     },
 
     getAll: async (requestQuery, callback) => {
-        logger.info('getAll');
+        logger.trace(`UserService: get all users`);
         if (requestQuery.isActive) {
             requestQuery.isActive === "true" ? requestQuery.isActive = 1 : requestQuery.isActive = 0;
         }
@@ -121,7 +121,7 @@ const userService = {
     },
 
     getById: async (userId, withPassword, callback) => {
-        logger.info('get info from user with id: ' + userId);
+        logger.trace(`UserService: get user with id ${userId}`);
         const queryString = withPassword ? `SELECT * FROM user WHERE id = ${userId};` :
             `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE id = ${userId};`;
         try {
@@ -142,7 +142,7 @@ const userService = {
     },
 
     getProfile: async (userId, callback) => {
-        logger.info('get info from user with id: ' + userId);
+        logger.info(`UserService: get user profile with id ${userId}`);
         try {
             const result = await query(
                 `SELECT * FROM user WHERE id = ${userId};`, 
@@ -158,7 +158,7 @@ const userService = {
     },
 
     login: async (login, callback) => {
-        logger.trace(`userService: login ${login.emailAdress}`);
+        logger.trace(`UserService: login ${login.emailAdress}`);
         try {
             const data = await query(
                 `SELECT * FROM user WHERE emailAdress = '${login.emailAdress}';`,

@@ -3,11 +3,8 @@ import logger from '../logger.js';
 
 const mealService = {
     create: async (meal, userId, callback) => {
-        logger.warn('create meal', meal);
+        logger.trace(`MealService: Create meal with name: ${meal.name}`);
         const date = new Date();
-        let time = date.toJSON().split('T');
-        const formattedDate = `${time[0]} ${time[1].slice(0, -5)}`;
-        logger.warn(formattedDate);
         try {
             const result = await query(
                 'INSERT INTO meal (isActive, isVega, isVegan, isToTakeHome, dateTime, maxAmountOfParticipants, price, imageURL, cookId, createDate, updateDate, name, description, allergenes)' +
@@ -26,7 +23,7 @@ const mealService = {
     },
 
     delete: async (mealId, userId, callback) => {
-        logger.info('deleting meal with id: ', mealId);
+        logger.trace(`MealService: delete meal with id: ${mealId}`);
         try {
             const result = await query(
                 `SELECT * FROM meal WHERE id = ${mealId};`, 
@@ -53,6 +50,7 @@ const mealService = {
     },
 
     getAll: async (callback) => {
+        logger.trace(`MealService: get all meals`);
         try {
             const meals = await query(
                 `SELECT * FROM meal;`, 
@@ -62,16 +60,10 @@ const mealService = {
                     `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE id = ${meals[i].cookId};`, 
                 );
                 meals[i].cook = userCook[0];
-                meals[i].participants = [];
-                const participantIds = await query(
-                    `SELECT userId FROM meal_participants_user WHERE mealId = ${meals[i].id}`
+                const participants = await query(
+                    `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE id in (SELECT userId FROM meal_participants_user WHERE mealId = ${meals[i].id});`, 
                 );
-                for (let j = 0; j < participantIds.length; j++) {
-                    const participant = await query(
-                        `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE id = ${participantIds[j].userId};`, 
-                    );
-                    meals[i].participants.push(participant[0]);
-                }
+                meals[i].participants = participants;
             }
             
             callback(null, {
@@ -85,6 +77,7 @@ const mealService = {
     },
 
     getById: async (mealId, callback) => {
+        logger.trace(`MealService: get meals with id: ${mealId}`);
         try {
             const meals = await query(
                 `SELECT * FROM meal WHERE id = ${mealId};`, 

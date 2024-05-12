@@ -19,7 +19,7 @@ export async function validateToken(req, res, next) {
     logger.trace('Headers:', req.headers);
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-        logger.warn('Authorization header missing!');
+        logger.info('Authorization header missing!');
         next({
             status: 401,
             message: 'Authorization header missing!',
@@ -33,8 +33,8 @@ export async function validateToken(req, res, next) {
             logger.debug('token is valid', payload);
             next();
         } catch (err) {
-            logger.warn(err);
-            logger.warn('Not authorized');
+            logger.info(err);
+            logger.info('Not authorized');
                 next({
                     status: 401,
                     message: 'Not authorized!',

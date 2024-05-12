@@ -2,6 +2,7 @@ import express from 'express';
 import logger from './src/logger.js';
 import userRoutes from './src/routes/user.routes.js';
 import mealRouter from './src/routes/meal.routes.js';
+import registrationRouter from './src/routes/registration.router.js';
 
 const app = express();
 const port = 8080;
@@ -13,6 +14,7 @@ app.get('/', (req, res) => {
 
 app.use(userRoutes);
 app.use(mealRouter);
+app.use(registrationRouter);
 
 app.listen(port, () => {
     logger.info(`Server is running on port ${port}`);

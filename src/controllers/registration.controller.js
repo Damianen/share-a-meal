@@ -1,46 +1,26 @@
-
 import logger from "../logger.js";
-import { validateToken } from "../auth.js";
-import mealService from "../services/meal.service.js"
+import registrationService from "../services/registration.services.js";
 
-const mealController = {
+const registrationController = {
     create: (req, res, next) => {
-        const meal = req.body;
-        logger.info("MealController: create meal");
-        mealService.create(meal, res.locals.userId, (error, success) => {
+        logger.info("Controller: Create new registration");
+        registrationService.create(parseInt(req.params.mealId), res.locals.userId, (error, success) => {
             if (error) {
                 next({
-                    status: 403,
+                    status: error.status,
                     message: error.message,
                     data: {}
                 });
             }
             if (success) {
-                res.status(201).json({...success});
+                res.status(200).json({...success});
             }
-        })
+        });
     },
 
     delete: (req, res, next) => {
-        const id = req.params.mealId;
-        logger.info("MealController: delete meal");
-        mealService.delete(id, parseInt(res.locals.userId), (error, success) => {
-            if (error) {
-                next({
-                    status: error.status,
-                    message: error.message,
-                    data: {}
-                });
-            }
-            if (success) {
-                res.status(200).json({...success});
-            }
-        })
-    },
-
-    getAll: (req, res, next) => {
-        logger.info("MealController: get all meals");
-        mealService.getAll((error, success) => {
+        logger.info("Controller: Delete registration");
+        registrationService.delete(parseInt(req.params.mealId), res.locals.userId, (error, success) => {
             if (error) {
                 next({
                     status: error.status,
@@ -54,9 +34,9 @@ const mealController = {
         });
     },
 
-    getById: (req, res, next) => {
-        logger.info("MealController: get meal by id");
-        mealService.getById(req.params.mealId, (error, success) => {
+    getAllParticipants: (req, res, next) => {
+        logger.info("Controller: get all participants");
+        registrationService.getAllParticipants(parseInt(req.params.mealId), (error, success) => {
             if (error) {
                 next({
                     status: error.status,
@@ -69,6 +49,22 @@ const mealController = {
             }
         });
     },
-};
 
-export default mealController;
+    getParticipantById: (req, res, next) => {
+        logger.info("Controller: get participant by id");
+        registrationService.getParticipantById(parseInt(req.params.mealId), parseInt(req.params.participantId), (error, success) => {
+            if (error) {
+                next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                res.status(200).json({...success});
+            }
+        });
+    }
+}
+
+export default registrationController;
