@@ -246,7 +246,6 @@ describe('UC-301 - UC-305', () => {
                 .set('Authorization', 'Bearer ' + token)
                 .end((err, res) => {
                     assert.ifError(err);
-                    console.log(res.body);
                     res.should.have.status(403);
                     res.body.should.be.an.an('object')
                         .that.has.all.keys('status', 'message', 'data');

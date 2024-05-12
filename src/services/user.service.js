@@ -54,7 +54,7 @@ const userService = {
                     data: user
                 });
         } catch (err) {
-            logger.warn('error updating user: ', err.message || 'unknown error');
+            logger.info('error updating user: ', err.message || 'unknown error');
             callback(err, null);
         }
     },

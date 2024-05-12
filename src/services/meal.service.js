@@ -8,7 +8,7 @@ const mealService = {
         try {
             const result = await query(
                 'INSERT INTO meal (isActive, isVega, isVegan, isToTakeHome, dateTime, maxAmountOfParticipants, price, imageURL, cookId, createDate, updateDate, name, description, allergenes)' +
-                `VALUES (${meal.isActive}, ${meal.isVega}, ${meal.isVegan}, ${meal.isToTakeHome}, '${meal.dateTime}', ${meal.maxAmountOfParticipants}, ${meal.price}, '${meal.imageURL}', ${userId}, '${meal.createDate}', '${formattedDate}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`,
+                `VALUES (${meal.isActive}, ${meal.isVega}, ${meal.isVegan}, ${meal.isToTakeHome}, '${meal.dateTime}', ${meal.maxAmountOfParticipants}, ${meal.price}, '${meal.imageURL}', ${userId}, '${meal.createDate}', '${date.toJSON()}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`,
             );
             logger.trace(`meal created with id ${result.insertId}.`)
             callback(null, {
@@ -17,7 +17,7 @@ const mealService = {
                 data: meal
             });
         } catch (err) {
-            logger.warn('error creating meal: ', err.message || 'unknown error');
+            logger.info('error creating meal: ', err.message || 'unknown error');
             callback(err, null);
         }
     },
@@ -31,7 +31,6 @@ const mealService = {
             if (!result || result.length < 1) {
                 throw { status: 404, message: `Meal with id: ${mealId} not found!`, data: {}};
             }
-            logger.warn(result[0]);
             if (result[0].cookId != userId){
                 throw { status: 403, message: "Not authorized to delete this meal!", data: {}};
             }
