@@ -110,6 +110,6 @@ router.get('/api/meal/:mealId', validateMealId, mealController.getById);
 
 router.post('/api/meal', validateToken, validateMeal, mealController.create);
 router.delete('/api/meal/:mealId', validateToken, validateMealId, mealController.delete);
-router.put("/api/meal/:mealId", validateToken, notFound);
+router.put("/api/meal/:mealId", validateToken, validateMeal, validateMealId, mealController.update);
 
 export default router;

@@ -90,11 +90,9 @@ const userService = {
         if (requestQuery.isActive) {
             requestQuery.isActive === "true" ? requestQuery.isActive = 1 : requestQuery.isActive = 0;
         }
-        logger.info(requestQuery);
         const queryString = Object.values(requestQuery).length != 0 ? 
             `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE ${Object.keys(requestQuery)[0] + " = '" + Object.values(requestQuery)[0]}' ${Object.keys(requestQuery)[1] ? "AND " + Object.keys(requestQuery)[1] + " = '" + Object.values(requestQuery)[1] + "'": ''};` : 
             `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user;`;
-        logger.info(queryString);
         try {
             const result = await query(
                 queryString, 
@@ -115,6 +113,7 @@ const userService = {
                     data: result
                 });
             } catch (err) {
+                logger.info('error getting users: ', err.message || 'unknown error');
                 callback(err, null);
             } 
         }
@@ -137,6 +136,7 @@ const userService = {
                 data: result[0]
             });
         } catch (err) {
+            logger.info('error getting user: ', err.message || 'unknown error');
             callback(err, null);
         }
     },
@@ -177,6 +177,7 @@ const userService = {
                 throw { status: 409, message: 'User not found or password invalid', data: {}};
             }
         } catch (err) {
+            logger.info('error logging in: ', err.message || 'unknown error');
             callback(err, null);
         }
     }

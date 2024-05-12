@@ -48,6 +48,34 @@ const mealService = {
         }
     },
 
+    update: async (mealId, meal, userId, callback) => {
+        logger.trace(`MealService: update meal with id: ${mealId}`);
+        const date = new Date();
+        try {
+            const result = await query(
+                `SELECT * FROM meal WHERE id = ${mealId};`,
+            );
+            if (!result || result.length < 1) {
+                throw { status: 404, message: `Meal with id: ${mealId} not found!`, data: {}};
+            }
+            if (result[0].cookId != userId){
+                throw { status: 403, message: "Not authorized to delete this meal!", data: {}};
+            }
+            await query(
+                `UPDATE meal SET isActive = ${meal.isActive}, isVega = ${meal.isVega}, isVegan = ${meal.isVegan}, isToTakeHome = ${meal.isToTakeHome}, dateTime = '${meal.dateTime}', maxAmountOfParticipants = ${meal.maxAmountOfParticipants}, price = ${meal.price}, imageURL = '${meal.imageURL}', cookId = ${userId}, createDate = '${meal.createDate}', updateDate = '${date.toJSON()}', name = '${meal.name}', description = '${meal.description}', allergenes = '${meal.allergenes}' WHERE id = ${mealId};`
+            );
+            logger.trace(`meal updated with id ${result.insertId}.`);
+            callback(null, {
+                status: 200,
+                message: `meal updated with id ${result.insertId}.`,
+                data: meal
+            });
+        } catch (err) {
+            logger.info('error updating meal: ', err.message || 'unknown error');
+            callback(err, null);
+        }
+    },
+
     getAll: async (callback) => {
         logger.trace(`MealService: get all meals`);
         try {
@@ -71,6 +99,7 @@ const mealService = {
                 data: meals
             });
         } catch (err) {
+            logger.info('error getting meals: ', err.message || 'unknown error');
             callback(err, null);
         }
     },
@@ -104,6 +133,7 @@ const mealService = {
                 data: meals[0]
             });
         } catch (err) {
+            logger.info('error getting meal: ', err.message || 'unknown error');
             callback(err, null);
         }
     }

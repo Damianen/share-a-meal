@@ -5,9 +5,8 @@ import mealService from "../services/meal.service.js"
 
 const mealController = {
     create: (req, res, next) => {
-        const meal = req.body;
         logger.info("MealController: create meal");
-        mealService.create(meal, res.locals.userId, (error, success) => {
+        mealService.create(req.body, res.locals.userId, (error, success) => {
             if (error) {
                 next({
                     status: 403,
@@ -22,9 +21,8 @@ const mealController = {
     },
 
     delete: (req, res, next) => {
-        const id = req.params.mealId;
         logger.info("MealController: delete meal");
-        mealService.delete(id, parseInt(res.locals.userId), (error, success) => {
+        mealService.delete(parseInt(req.params.mealId), res.locals.userId, (error, success) => {
             if (error) {
                 next({
                     status: error.status,
@@ -36,6 +34,22 @@ const mealController = {
                 res.status(200).json({...success});
             }
         })
+    },
+
+    update: (req, res, next) => {
+        logger.info("MealController: update meal");
+        mealService.update(parseInt(req.params.mealId), req.body, res.locals.userId, (error, success) => {
+            if (error) {
+                next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                res.status(200).json({...success});
+            }
+        });
     },
 
     getAll: (req, res, next) => {

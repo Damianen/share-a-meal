@@ -67,7 +67,7 @@ const registrationService = {
                 data: result[0]
             });
         } catch (err) {
-            logger.info('error  getting participant: ', err.message || 'unknown error');
+            logger.info('error getting participant: ', err.message || 'unknown error');
             callback(err, null);
         }
     }
