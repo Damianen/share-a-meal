@@ -133,6 +133,7 @@ describe('UC-301 - UC-305', () => {
                     allergenes: "gluten"
                 })
                 .end((err, res) => {
+                    logger.warn(res.body);
                     assert.ifError(err);
                     res.should.have.status(201);
                     res.body.should.be.an.an('object')
@@ -307,6 +308,7 @@ describe('UC-301 - UC-305', () => {
                     allergenes: "gluten"
                 })
                 .end((err, res) => {
+                    logger.warn(res.body);
                     assert.ifError(err);
                     res.should.have.status(201);
                     res.body.should.be.an.an('object')
