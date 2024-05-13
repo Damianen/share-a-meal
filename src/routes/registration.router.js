@@ -5,6 +5,7 @@ import logger from '../logger.js';
 import { validateToken } from '../auth.js';
 import { notFound } from './404.route.js';
 import registrationController from '../controllers/registration.controller.js';
+import { resolveObjectURL } from 'buffer';
 
 should();
 const router = Router();

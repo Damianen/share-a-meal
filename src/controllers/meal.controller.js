@@ -47,7 +47,7 @@ const mealController = {
                 });
             }
             if (success) {
-                res.status(200).json({...success});
+                res.status(201).json({...success});
             }
         });
     },

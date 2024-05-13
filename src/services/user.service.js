@@ -163,7 +163,11 @@ const userService = {
             const data = await query(
                 `SELECT * FROM user WHERE emailAdress = '${login.emailAdress}';`,
             );
-            if (data && data.length === 1 && data[0].password === login.password) {
+            if (!data || data.length < 1) {
+                throw { status: 404, message: 'User not found', data: {}};
+            } else if (data[0].password !== login.password) {
+                throw { status: 400, message: 'password invalid', data: {}};
+            } else {
                 logger.trace('passwords matched, sending user info and token');
                 const { password, ...userinfo } = data[0];
                 const payload = { userId: userinfo.id };
@@ -173,8 +177,6 @@ const userService = {
                     message: `Login successful!`,
                     data: { ...userinfo, token}
                 });
-            } else {
-                throw { status: 409, message: 'User not found or password invalid', data: {}};
             }
         } catch (err) {
             logger.info('error logging in: ', err.message || 'unknown error');

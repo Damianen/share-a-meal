@@ -1,15 +1,10 @@
 import query from '../src/dtb/mySQLdb.js';
 import server from '../server.js';
-import { should, use } from 'chai';
-import chaiHttp from 'chai-http';
-import { setLevel } from 'tracer';
 import logger from '../src/logger.js';
 import { assert } from 'chai';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import chaiServer from './meal.test.js';
-
-
 
 const CLEAR_MEAL_TABLE = 'DELETE IGNORE FROM `meal`;';
 const CLEAR_PARTICIPANTS_TABLE = 'DELETE IGNORE FROM `meal_participants_user`;';
@@ -26,9 +21,98 @@ const INSERT_USER2 =
 const INSERT_MEALS =
     'INSERT INTO `meal` (`id`, `name`, `description`, `imageUrl`, `dateTime`, `maxAmountOfParticipants`, `price`, `cookId`) VALUES' +
     "(1, 'Meal A', 'description', 'image url', NOW(), 5, 6.50, 1)," +
-    "(2, 'Meal B', 'description', 'image url', NOW(), 5, 6.50, 1);";
+    "(2, 'Meal B', 'description', 'image url', NOW(), 0, 6.50, 1);";
 
 const endpointToTest = '/api/user';
+
+describe('UC-101 logging in', () => {
+    const loggingInEndpoint = '/api/login';
+    beforeEach((done) => {
+        logger.debug('beforeEach called');
+        try {
+            query(CLEAR_DB + INSERT_USER).then(() => done());
+        } catch (err) {
+            throw err;
+        }
+    });
+
+    it('TC-101-1 Required field missing', (done) => {
+        chaiServer.request(server)
+            .post(loggingInEndpoint)
+            .send({
+                emailAdress: "name@server.nl",
+                //password: "secret"
+            })
+            .end((err, res) => {
+                assert.ifError(err);
+                res.should.have.status(400);
+                res.body.should.be.an.an('object')
+                    .that.has.all.keys('status', 'message', 'data');
+                res.body.status.should.be.a('number');
+                res.body.data.should.be.an('object').that.is.empty;
+                res.body.message.should.equal('Missing or incorrect password field');
+                done();
+            });
+    });
+
+    it('TC-101-2 Not valid password', (done) => {
+        chaiServer.request(server)
+            .post(loggingInEndpoint)
+            .send({
+                emailAdress: "name@server.nl",
+                password: "notTheCorrectPassword"
+            })
+            .end((err, res) => {
+                assert.ifError(err);
+                res.should.have.status(400);
+                res.body.should.be.an.an('object')
+                    .that.has.all.keys('status', 'message', 'data');
+                res.body.status.should.be.a('number');
+                res.body.data.should.be.an('object').that.is.empty;
+                res.body.message.should.equal('password invalid');
+                done();
+            });
+    });
+
+    it('TC-101-3 User does not exist', (done) => {
+        chaiServer.request(server)
+            .post(loggingInEndpoint)
+            .send({
+                emailAdress: "notAnExistingEmail@server.nl",
+                password: "secret"
+            })
+            .end((err, res) => {
+                assert.ifError(err);
+                res.should.have.status(404);
+                res.body.should.be.an.an('object')
+                    .that.has.all.keys('status', 'message', 'data');
+                res.body.status.should.be.a('number');
+                res.body.data.should.be.an('object').that.is.empty;
+                res.body.message.should.equal('User not found');
+                done();
+            });
+    });
+
+    it('TC-101-4 logged in successfully', (done) => {
+        chaiServer.request(server)
+            .post(loggingInEndpoint)
+            .send({
+                emailAdress: "name@server.nl",
+                password: "secret"
+            })
+            .end((err, res) => {
+                assert.ifError(err);
+                res.should.have.status(200);
+                res.body.should.be.an.an('object')
+                    .that.has.all.keys('status', 'message', 'data');
+                res.body.status.should.be.a('number');
+                res.body.data.should.be.an('object').that.is.not.empty;
+                res.body.data.should.have.all.keys('id', 'firstName', 'lastName', 'isActive', 'emailAdress', 'phoneNumber', 'roles', 'street', 'city', 'token');
+                res.body.message.should.equal('Login successful!');
+                done();
+            });
+    });
+});
 
 describe('UC-201 - UC-205', () => {
     beforeEach((done) => {

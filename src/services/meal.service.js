@@ -59,14 +59,14 @@ const mealService = {
                 throw { status: 404, message: `Meal with id: ${mealId} not found!`, data: {}};
             }
             if (result[0].cookId != userId){
-                throw { status: 403, message: "Not authorized to delete this meal!", data: {}};
+                throw { status: 403, message: "Not authorized to update this meal!", data: {}};
             }
             await query(
                 `UPDATE meal SET isActive = ${meal.isActive}, isVega = ${meal.isVega}, isVegan = ${meal.isVegan}, isToTakeHome = ${meal.isToTakeHome}, dateTime = '${meal.dateTime}', maxAmountOfParticipants = ${meal.maxAmountOfParticipants}, price = ${meal.price}, imageURL = '${meal.imageURL}', cookId = ${userId}, createDate = '${meal.createDate}', updateDate = '${date.toJSON()}', name = '${meal.name}', description = '${meal.description}', allergenes = '${meal.allergenes}' WHERE id = ${mealId};`
             );
             logger.trace(`meal updated with id ${result.insertId}.`);
             callback(null, {
-                status: 200,
+                status: 201,
                 message: `meal updated with id ${result.insertId}.`,
                 data: meal
             });

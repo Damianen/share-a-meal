@@ -27,7 +27,7 @@ const INSERT_USER2 =
 const INSERT_MEALS =
     'INSERT INTO `meal` (`id`, `name`, `description`, `imageUrl`, `dateTime`, `maxAmountOfParticipants`, `price`, `cookId`) VALUES' +
     "(1, 'Meal A', 'description', 'image url', NOW(), 5, 6.50, 1)," +
-    "(2, 'Meal B', 'description', 'image url', NOW(), 5, 6.50, 1);";
+    "(2, 'Meal B', 'description', 'image url', NOW(), 0, 6.50, 1);";
 
 const endpointToTest = '/api/meal';
 
@@ -140,6 +140,180 @@ describe('UC-301 - UC-305', () => {
                     res.body.status.should.be.a('number');
                     res.body.data.should.be.an('object').that.is.not.empty;
                     res.body.message.should.contain('meal created with id');
+                    done();
+                });
+        });
+    });
+
+    describe('UC-302 editing of meal', () => {
+        beforeEach((done) => {
+            logger.debug('beforeEach called');
+            try {
+                query(CLEAR_DB + INSERT_USER + INSERT_MEALS).then(() => done());
+            } catch (err) {
+                throw err;
+            }
+        });
+
+        it('TC-302-1 Required field missing', (done) => {
+            const token = jwt.sign({ userId: 1}, process.env.JWT_KEY);
+            chaiServer.request(server)
+                .put(endpointToTest + '/1')
+                .set('Authorization', 'Bearer ' + token)
+                .send({
+                    isActive: 1,
+                    isVega: 1,
+                    isVegan: 1,
+                    isToTakeHome: 1,
+                    dateTime: '2023-12-31 14:30:00',
+                    maxAmountOfParticipants: 10,
+                    price: 10.0,
+                    imgURL: "https://www.img.com",
+                    createDate: '2023-12-31 14:30:00',
+                    updateDate: '2023-12-31 14:30:00',
+                    //name: "food",
+                    description: "nice food",
+                    allergenes: "gluten"
+                })
+                .end((err, res) => {
+                    assert.ifError(err);
+                    res.should.have.status(400);
+                    res.body.should.be.an.an('object')
+                        .that.has.all.keys('status', 'message', 'data');
+                    res.body.status.should.be.a('number');
+                    res.body.data.should.be.an('object').that.is.empty;
+                    res.body.message.should.equal('Missing or incorrect name field');
+                    done();
+                });
+        });
+
+        it('TC-302-2 not logged in', (done) => {
+            const token = jwt.sign({ userId: 1}, process.env.JWT_KEY);
+            chaiServer.request(server)
+                .put(endpointToTest+ '/1')
+                //.set('Authorization', 'Bearer ' + token)
+                .send({
+                    isActive: 1,
+                    isVega: 1,
+                    isVegan: 1,
+                    isToTakeHome: 1,
+                    dateTime: '2023-12-31 14:30:00',
+                    maxAmountOfParticipants: 10,
+                    price: 10.0,
+                    imgURL: "https://www.img.com",
+                    cookId: 1,
+                    createDate: '2023-12-31 14:30:00',
+                    updateDate: '2023-12-31 14:30:00',
+                    name: "food",
+                    description: "nice food",
+                    allergenes: "gluten"
+                })
+                .end((err, res) => {
+                    assert.ifError(err);
+                    res.should.have.status(401);
+                    res.body.should.be.an.an('object')
+                        .that.has.all.keys('status', 'message', 'data');
+                    res.body.status.should.be.a('number');
+                    res.body.data.should.be.an('object').that.is.empty;
+                    res.body.message.should.equal('Authorization header missing!');
+                    done();
+                });
+        });
+
+        it('TC-302-3 not authorized to edit', (done) => {
+            const token = jwt.sign({ userId: 2}, process.env.JWT_KEY);
+            chaiServer.request(server)
+                .put(endpointToTest + '/1')
+                .set('Authorization', 'Bearer ' + token)
+                .send({
+                    isActive: 1,
+                    isVega: 1,
+                    isVegan: 1,
+                    isToTakeHome: 1,
+                    dateTime: '2023-12-31 14:30:00',
+                    maxAmountOfParticipants: 10,
+                    price: 10.0,
+                    imgURL: "https://www.img.com",
+                    cookId: 1,
+                    createDate: '2023-12-31 14:30:00',
+                    updateDate: '2023-12-31 14:30:00',
+                    name: "food",
+                    description: "nice food",
+                    allergenes: "gluten"
+                })
+                .end((err, res) => {
+                    assert.ifError(err);
+                    res.should.have.status(403);
+                    res.body.should.be.an.an('object')
+                        .that.has.all.keys('status', 'message', 'data');
+                    res.body.status.should.be.a('number');
+                    res.body.data.should.be.an('object').that.is.empty;
+                    res.body.message.should.equal('Not authorized to update this meal!');
+                    done();
+                });
+        });
+
+        it('TC-302-4 id does not exist', (done) => {
+            const token = jwt.sign({ userId: 1}, process.env.JWT_KEY);
+            chaiServer.request(server)
+                .put(endpointToTest+ '/3')
+                .set('Authorization', 'Bearer ' + token)
+                .send({
+                    isActive: 1,
+                    isVega: 1,
+                    isVegan: 1,
+                    isToTakeHome: 1,
+                    dateTime: '2023-12-31 14:30:00',
+                    maxAmountOfParticipants: 10,
+                    price: 10.0,
+                    imgURL: "https://www.img.com",
+                    cookId: 1,
+                    createDate: '2023-12-31 14:30:00',
+                    updateDate: '2023-12-31 14:30:00',
+                    name: "food",
+                    description: "nice food",
+                    allergenes: "gluten"
+                })
+                .end((err, res) => {
+                    assert.ifError(err);
+                    res.should.have.status(404);
+                    res.body.should.be.an.an('object')
+                        .that.has.all.keys('status', 'message', 'data');
+                    res.body.status.should.be.a('number');
+                    res.body.data.should.be.an('object').that.is.empty;
+                    res.body.message.should.equal('Meal with id: 3 not found!');
+                    done();
+                });
+        });
+
+        it('TC-302-5 update meal', (done) => {
+            const token = jwt.sign({ userId: 1}, process.env.JWT_KEY);
+            chaiServer.request(server)
+                .put(endpointToTest+ '/1')
+                .set('Authorization', 'Bearer ' + token)
+                .send({
+                    isActive: 1,
+                    isVega: 1,
+                    isVegan: 1,
+                    isToTakeHome: 1,
+                    dateTime: '2023-12-31 14:30:00',
+                    maxAmountOfParticipants: 10,
+                    price: 10.0,
+                    imgURL: "https://www.img.com",
+                    createDate: '2023-12-31 14:30:00',
+                    updateDate: '2023-12-31 14:30:00',
+                    name: "food",
+                    description: "nice food",
+                    allergenes: "gluten"
+                })
+                .end((err, res) => {
+                    assert.ifError(err);
+                    res.should.have.status(201);
+                    res.body.should.be.an.an('object')
+                        .that.has.all.keys('status', 'message', 'data');
+                    res.body.status.should.be.a('number');
+                    res.body.data.should.be.an('object').that.is.not.empty;
+                    res.body.message.should.contain('meal updated with id');
                     done();
                 });
         });

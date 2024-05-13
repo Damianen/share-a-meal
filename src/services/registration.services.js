@@ -5,6 +5,18 @@ const registrationService = {
     create: async (mealId, userId, callback) => {
         logger.trace(`RegistrationService: create registration to meal with id: ${mealId}`);
         try {
+            const meal = await query(
+                `SELECT * FROM meal WHERE id = ${mealId};`
+            );
+            if (!meal || meal.length < 1) {
+                throw { status: 404, message: 'meal not found', data: {}};
+            }
+            const participants = await query(
+                `SELECT * FROM meal_participants_user WHERE mealId = ${mealId}`
+            )
+            if (participants.length + 1 > meal[0].maxAmountOfParticipants) {
+                throw { status: 200, message: 'meal is full', data: {}};
+            }
             const result = await query(
                 `INSERT INTO meal_participants_user (mealId, userId) VALUES (${mealId}, ${userId});`
             );
@@ -25,12 +37,24 @@ const registrationService = {
     delete: async (mealId, userId, callback) => {
         logger.trace(`RegistrationService: delete registration from meal with id: ${mealId}`);
         try {
+            const meal = await query(
+                `SELECT * FROM meal WHERE id = ${mealId};`
+            );
+            if (!meal || meal.length < 1) {
+                throw { status: 404, message: 'meal not found', data: {}};
+            }
+            const registration = await query(
+                `SELECT * FROM meal_participants_user WHERE mealId = ${mealId} AND userId = ${userId};`
+            )
+            if (!registration || registration.length < 1) {
+                throw { status: 404, message: 'registration does not exist', data: {}};
+            }
             await query(
                 `DELETE FROM meal_participants_user WHERE mealId = ${mealId} AND userId = ${userId};`
             );
             callback(null, {
                 status: 200,
-                message: `Registration deleted to meal with id: ${mealId}.`,
+                message: `Registration deleted to meal with id: ${mealId}.`
             });
         } catch (err) {
             logger.info('error deleting registration: ', err.message || 'unknown error');
