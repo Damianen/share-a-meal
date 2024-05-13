@@ -52,6 +52,7 @@ const mealService = {
     update: async (mealId, meal, userId, callback) => {
         logger.trace(`MealService: update meal with id: ${mealId}`);
         const date = new Date();
+        const formattedDate = `${date.toJSON().split('T')[0]} ${date.toJSON().split('T')[1].split('.')[0]}`;
         try {
             const result = await query(
                 `SELECT * FROM meal WHERE id = ${mealId};`,
@@ -63,7 +64,7 @@ const mealService = {
                 throw { status: 403, message: "Not authorized to update this meal!", data: {}};
             }
             await query(
-                `UPDATE meal SET isActive = ${meal.isActive}, isVega = ${meal.isVega}, isVegan = ${meal.isVegan}, isToTakeHome = ${meal.isToTakeHome}, dateTime = '${meal.dateTime}', maxAmountOfParticipants = ${meal.maxAmountOfParticipants}, price = ${meal.price}, imageURL = '${meal.imageURL}', cookId = ${userId}, createDate = '${meal.createDate}', updateDate = '${date.toJSON()}', name = '${meal.name}', description = '${meal.description}', allergenes = '${meal.allergenes}' WHERE id = ${mealId};`
+                `UPDATE meal SET isActive = ${meal.isActive}, isVega = ${meal.isVega}, isVegan = ${meal.isVegan}, isToTakeHome = ${meal.isToTakeHome}, dateTime = '${meal.dateTime}', maxAmountOfParticipants = ${meal.maxAmountOfParticipants}, price = ${meal.price}, imageURL = '${meal.imageURL}', cookId = ${userId}, createDate = '${meal.createDate}', updateDate = '${formattedDate}', name = '${meal.name}', description = '${meal.description}', allergenes = '${meal.allergenes}' WHERE id = ${mealId};`
             );
             logger.trace(`meal updated with id ${result.insertId}.`);
             callback(null, {
