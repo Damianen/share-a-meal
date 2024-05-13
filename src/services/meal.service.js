@@ -5,10 +5,11 @@ const mealService = {
     create: async (meal, userId, callback) => {
         logger.trace(`MealService: Create meal with name: ${meal.name}`);
         const date = new Date();
+        const formattedDate = `${date.toJSON().split('T')[0]} ${date.toJSON().split('T')[1].split('.')[0]}`;
         try {
             const result = await query(
                 'INSERT INTO meal (isActive, isVega, isVegan, isToTakeHome, dateTime, maxAmountOfParticipants, price, imageURL, cookId, createDate, updateDate, name, description, allergenes)' +
-                `VALUES (${meal.isActive}, ${meal.isVega}, ${meal.isVegan}, ${meal.isToTakeHome}, '${meal.dateTime}', ${meal.maxAmountOfParticipants}, ${meal.price}, '${meal.imageURL}', ${userId}, '${meal.createDate}', '${date.toJSON()}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`,
+                `VALUES (${meal.isActive}, ${meal.isVega}, ${meal.isVegan}, ${meal.isToTakeHome}, '${meal.dateTime}', ${meal.maxAmountOfParticipants}, ${meal.price}, '${meal.imageURL}', ${userId}, '${meal.createDate}', '${formattedDate}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`,
             );
             logger.trace(`meal created with id ${result.insertId}.`)
             callback(null, {

@@ -173,7 +173,6 @@ describe('UC-402 deleting registration for meal', () => {
             .delete(endPoint + '2/participate')
             .set('Authorization', 'Bearer ' + token)
             .end((err, res) => {
-                console.log(res.body);
                 assert.ifError(err);
                 res.should.have.status(200);
                 res.body.should.be.an.an('object')
