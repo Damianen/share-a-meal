@@ -5,15 +5,27 @@ import { assert } from 'chai';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import chaiServer from './meal.test.js';
+import bcrypt from 'bcryptjs';
 
 const CLEAR_MEAL_TABLE = 'DELETE IGNORE FROM `meal`;';
 const CLEAR_PARTICIPANTS_TABLE = 'DELETE IGNORE FROM `meal_participants_user`;';
 const CLEAR_USERS_TABLE = 'DELETE IGNORE FROM `user`;';
 const CLEAR_DB = CLEAR_MEAL_TABLE + CLEAR_PARTICIPANTS_TABLE + CLEAR_USERS_TABLE;
 
+const hash = (password) => {
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(password, 10, async (err, hashedPassword) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(hashedPassword);
+        })
+    });
+}
+
 const INSERT_USER =
     'INSERT INTO `user` (`id`, `firstName`, `lastName`, `emailAdress`, `password`, `street`, `city` ) VALUES' +
-    '(1, "first", "last", "name@server.nl", "secret", "street", "city");';
+    `(1, "first", "last", "name@server.nl", "${await hash("secret")}", "street", "city");`;
 const INSERT_USER2 =
     'INSERT INTO `user` (`id`, `firstName`, `lastName`, `emailAdress`, `password`, `street`, `city` ) VALUES' +
     '(2, "first", "last", "name2@server.nl", "secret", "street", "city");';

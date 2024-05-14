@@ -1,6 +1,7 @@
 import query from '../dtb/mySQLdb.js';
 import logger from '../logger.js';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const sign = (payload, key, expires) => {
     return new Promise((resolve, reject) => {
@@ -13,12 +14,24 @@ const sign = (payload, key, expires) => {
     });
 }
 
+const hash = (password) => {
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(password, 10, async (err, hashedPassword) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(hashedPassword);
+        })
+    });
+}
+
 const userService = {
     create: async (user, callback) => {
         logger.trace(`UserService: create new user with email: ${user.emailAdress}`);
         try {
+            const hashedPassword = hash(user.password);
             const result = await query(
-                `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${user.password}', '${user.phoneNumber}', '${user.roles}', '${user.street || ''}', '${user.city || ''}');`,
+                `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${hashedPassword}', '${user.phoneNumber}', '${user.roles}', '${user.street || ''}', '${user.city || ''}');`,
             );
             logger.trace(`User created with id ${result.insertId}.`)
             callback(null, {
@@ -39,20 +52,21 @@ const userService = {
                 `SELECT * FROM user WHERE id = ${validationId};`
             );
             if (!result || result.length < 1) {
-                throw { status: 404, message: `User with id: ${validationId} not found!`, data: {}};
+                throw { status: 404, message: `User with id: ${validationId} not found!`, data: {} };
             }
-            if (validationId != userId){
-                throw { status: 403, message: "Not authorized to update this profile", data: {}};
+            if (validationId != userId) {
+                throw { status: 403, message: "Not authorized to update this profile", data: {} };
             }
+            const hashedPassword = hash(user.password);
             await query(
-                `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${user.password}', phoneNumber = '${user.phoneNumber}', roles = '${user.roles}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`, 
+                `UPDATE user SET firstName = '${user.firstName}', lastName = '${user.lastName}', isActive = '${user.isActive}', emailAdress = '${user.emailAdress}', password = '${hashedPassword}', phoneNumber = '${user.phoneNumber}', roles = '${user.roles}', street = '${user.street || ''}', city = '${user.city || ''}' WHERE id = ${userId};`,
             );
             logger.trace(`User updated with id ${userId}.`);
-                callback(null, {
-                    status: 200,
-                    message: `User updated with id ${userId}.`,
-                    data: user
-                });
+            callback(null, {
+                status: 200,
+                message: `User updated with id ${userId}.`,
+                data: user
+            });
         } catch (err) {
             logger.info('error updating user: ', err.message || 'unknown error');
             callback(err, null);
@@ -63,16 +77,16 @@ const userService = {
         logger.trace(`UserService: delete user with id ${userId}`);
         try {
             const result = await query(
-                `SELECT * FROM user WHERE id = ${validationId};`, 
+                `SELECT * FROM user WHERE id = ${validationId};`,
             );
             if (!result || result.length < 1) {
-                throw { status: 404, message: `User with id: ${validationId} not found!`, data: {}};
+                throw { status: 404, message: `User with id: ${validationId} not found!`, data: {} };
             }
-            if (validationId != userId){
-                throw { status: 403, message: "Not authorized to delete this profile!", data: {}};
+            if (validationId != userId) {
+                throw { status: 403, message: "Not authorized to delete this profile!", data: {} };
             }
             await query(
-                `DELETE FROM user WHERE id = ${userId};`, 
+                `DELETE FROM user WHERE id = ${userId};`,
             );
             logger.trace(`User deleted with id ${userId}.`);
             callback(null, {
@@ -90,12 +104,12 @@ const userService = {
         if (requestQuery.isActive) {
             requestQuery.isActive === "true" ? requestQuery.isActive = 1 : requestQuery.isActive = 0;
         }
-        const queryString = Object.values(requestQuery).length != 0 ? 
-            `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE ${Object.keys(requestQuery)[0] + " = '" + Object.values(requestQuery)[0]}' ${Object.keys(requestQuery)[1] ? "AND " + Object.keys(requestQuery)[1] + " = '" + Object.values(requestQuery)[1] + "'": ''};` : 
+        const queryString = Object.values(requestQuery).length != 0 ?
+            `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE ${Object.keys(requestQuery)[0] + " = '" + Object.values(requestQuery)[0]}' ${Object.keys(requestQuery)[1] ? "AND " + Object.keys(requestQuery)[1] + " = '" + Object.values(requestQuery)[1] + "'" : ''};` :
             `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user;`;
         try {
             const result = await query(
-                queryString, 
+                queryString,
             );
             callback(null, {
                 status: 200,
@@ -105,7 +119,7 @@ const userService = {
         } catch (err) {
             try {
                 const result = await query(
-                    `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user;`, 
+                    `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user;`,
                 );
                 callback(null, {
                     status: 200,
@@ -115,7 +129,7 @@ const userService = {
             } catch (err) {
                 logger.info('error getting users: ', err.message || 'unknown error');
                 callback(err, null);
-            } 
+            }
         }
     },
 
@@ -125,10 +139,10 @@ const userService = {
             `SELECT firstName, LastName, isActive, emailAdress, phoneNumber, roles, city, street FROM user WHERE id = ${userId};`;
         try {
             const result = await query(
-                queryString, 
+                queryString,
             );
             if (!result || result.length < 1) {
-                throw { status: 404, message: `User with id: ${userId} not found!`, data: {}};
+                throw { status: 404, message: `User with id: ${userId} not found!`, data: {} };
             }
             callback(null, {
                 status: 200,
@@ -145,7 +159,7 @@ const userService = {
         logger.info(`UserService: get user profile with id ${userId}`);
         try {
             const result = await query(
-                `SELECT * FROM user WHERE id = ${userId};`, 
+                `SELECT * FROM user WHERE id = ${userId};`,
             );
             callback(null, {
                 status: 200,
@@ -164,22 +178,23 @@ const userService = {
                 `SELECT * FROM user WHERE emailAdress = '${login.emailAdress}';`,
             );
             if (!data || data.length < 1) {
-                throw { status: 404, message: 'User not found', data: {}};
-            } else if (data[0].password !== login.password) {
-                throw { status: 400, message: 'password invalid', data: {}};
+                throw { status: 404, message: 'User not found', data: {} };
+            } else if (!await bcrypt.compare(login.password, data[0].password)) {
+                throw { status: 400, message: 'password invalid', data: {} };
             } else {
                 logger.trace('passwords matched, sending user info and token');
                 const { password, ...userinfo } = data[0];
                 const payload = { userId: userinfo.id };
-                const token = await sign(payload, process.env.JWT_KEY, {expiresIn: '12d'});
+                const token = await sign(payload, process.env.JWT_KEY, { expiresIn: '12d' });
                 callback(null, {
                     status: 200,
                     message: `Login successful!`,
-                    data: { ...userinfo, token}
+                    data: { ...userinfo, token }
                 });
             }
         } catch (err) {
             logger.info('error logging in: ', err.message || 'unknown error');
+
             callback(err, null);
         }
     }

@@ -35,11 +35,11 @@ export async function validateToken(req, res, next) {
         } catch (err) {
             logger.info(err);
             logger.info('Not authorized');
-                next({
-                    status: 401,
-                    message: 'Not authorized!',
-                    data: {}
-                });
+            next({
+                status: 401,
+                message: 'Not authorized!',
+                data: {}
+            });
         }
     }
 }
