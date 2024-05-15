@@ -29,7 +29,7 @@ const userService = {
     create: async (user, callback) => {
         logger.trace(`UserService: create new user with email: ${user.emailAdress}`);
         try {
-            const hashedPassword = hash(user.password);
+            const hashedPassword = await hash(user.password);
             const result = await query(
                 `INSERT INTO user (firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES ('${user.firstName}', '${user.lastName}', '${user.isActive}', '${user.emailAdress}', '${hashedPassword}', '${user.phoneNumber}', '${user.roles}', '${user.street || ''}', '${user.city || ''}');`,
             );
