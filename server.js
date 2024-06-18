@@ -5,7 +5,7 @@ import mealRouter from './src/routes/meal.routes.js';
 import registrationRouter from './src/routes/registration.router.js';
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 app.use(express.json());
 
 app.get('/', (req, res) => {
